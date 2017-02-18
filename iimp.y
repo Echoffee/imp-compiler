@@ -8,7 +8,7 @@
     int ival;
 	char* sval;
 
-	ast_node node;
+	struct s_ast_node* node;
 }
 
 %token S_AF S_SK S_SE S_IF S_TH S_EL S_WH S_DO S_PL S_MO S_MU
@@ -44,7 +44,7 @@ F		: P_OPEN E P_CLOSE {$$ = ast_create_node_from_ep($2);}
 C		: V_VAR S_AF E {$$ = ast_create_aff_node($1, $3);}
 		| S_SK { }
 		| P_OPEN C P_CLOSE {$$ = ast_create_node_from_cp($2);}
-		| S_IF E S_TH C S_EL C {ast_create_ITE_node($2, $4, $6;}
+		| S_IF E S_TH C S_EL C {ast_create_ITE_node($2, $4, $6);}
 		| S_WH E S_DO C {ast_create_WD_node($2, $4);}
 		| C S_SE C {ast_create_branch($1, $3);}
 		;

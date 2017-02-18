@@ -3,7 +3,7 @@
 #include <string.h>
 #include "imp_interpreter.h"
 
-variable v_v_root = NULL;
+variable v_root = NULL;
 variable v_current = NULL;
 ast_node a_root = NULL;
 //PRE_AST
@@ -23,10 +23,10 @@ void add_variable(char* name, int value)
 		v_root = v;
 }
 
-var get_variable(char* name)
+variable get_variable(char* name)
 {
 	variable c = v_root;
-	while (c != NULL && strcmp(c->name, label))
+	while (c != NULL && strcmp(c->name, name))
 		c = c->next;
 
 	return c;
@@ -82,14 +82,14 @@ char* concat(char* stat1, char* stat2)
 ast_node new_ast_node(int size)
 {
 	ast_node a = (ast_node) malloc(sizeof(struct s_ast_node));
-	a->category = NULL;
-	a->item = NULL;
+	a->category = EMPTY;
+	a->item = NONE;
 	a->var = NULL;
-	a->value = NULL;
+	a->value = 0;
 	a->child_num = size;
 	a->childs = (ast_node*) malloc(sizeof(ast_node) * size);
 
-	return ast_node;
+	return a;
 }
 
 ast_node ast_create_node_from_int(int value)
@@ -211,16 +211,85 @@ void initialize_ast()
 {
 	a_root = (ast_node) malloc(sizeof(struct s_ast_node));
 	a_root->category = ROOT;
-	a_root->item = NULL;
+	a_root->item = NONE;
 	a_root->var = NULL;
-	a_root->value = NULL;
+	a_root->value = 0;
 	a_root->child_num = 1;
 	a_root->childs = (ast_node*) malloc(sizeof(ast_node));
 }
 
 void ast_execute(ast_node root)
 {
-	
+	switch (root->category) {
+		case ROOT:
+			ast_execute(root->childs[0]);
+		break;
+
+		case EMPTY:
+			//welp
+		break;
+
+		case MEMBER:
+			switch (root->item) {
+				case VAR:
+					root->value = root->var->value;
+				break;
+
+				case CONST:
+					//:^)
+				break;
+			}
+		break;
+
+		case OPERATOR:
+			ast_execute(root->childs[0]);
+			ast_execute(root->childs[1]);
+			switch (root->item) {
+				case ADD:
+					root->value = root->childs[0]->value + root->childs[1]->value;
+				break;
+
+				case SUB:
+					root->value = root->childs[0]->value - root->childs[1]->value;
+				break;
+
+				case AFF:
+					root->childs[0]->var->value = root->childs[1]->value;
+				break;
+			}
+		break;
+
+		case LOOP:
+			switch (root->item) {
+				case ITE:
+					ast_execute(root->childs[0]);
+					if (root->childs[0]->value)
+						ast_execute(root->childs[1]);
+					else
+						ast_execute(root->childs[2]);
+				break;
+
+				case WD:
+					ast_execute(root->childs[0]);
+					while(root->childs[0]->value)
+					{
+						ast_execute(root->childs[1]);
+						ast_execute(root->childs[0]);
+					}
+				break;
+			}
+		break;
+
+		case BRANCH:
+			ast_execute(root->childs[0]);
+			ast_execute(root->childs[1]);
+		break;
+
+		case SINGLE_BLOCK:
+			ast_execute(root->childs[0]);
+			root->value = root->childs[0]->value;
+		break;
+	}
 }
 
 //UTIL

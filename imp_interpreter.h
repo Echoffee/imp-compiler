@@ -6,8 +6,11 @@ struct s_variable {
 
 typedef struct s_variable* variable;
 
-enum node_type { ROOT, MEMBER, OPERATOR, LOOP, BRANCH, SINGLE_BLOCK };
-enum node_item { CONST, VAR, AFF, ADD, SUB, MULT, ITE, WD};
+enum e_node_type { EMPTY, ROOT, MEMBER, OPERATOR, LOOP, BRANCH, SINGLE_BLOCK };
+enum e_node_item { NONE, CONST, VAR, AFF, ADD, SUB, MULT, ITE, WD};
+
+typedef enum e_node_type node_type;
+typedef enum e_node_item node_item;
 
 struct s_ast_node {
 	node_type category;
@@ -15,7 +18,7 @@ struct s_ast_node {
 	variable var;	//may be empty
 	int value;		//may be empty
 	int child_num;
-	struct s_ast_node* childs;
+	struct s_ast_node** childs;
 };
 
 typedef struct s_ast_node* ast_node;
