@@ -6,7 +6,7 @@ struct s_variable {
 
 typedef struct s_variable* variable;
 
-enum node_type { ROOT, MEMBER, OPERATOR, LOOP, BRANCH };
+enum node_type { ROOT, MEMBER, OPERATOR, LOOP, BRANCH, SINGLE_BLOCK };
 enum node_item { CONST, VAR, AFF, ADD, SUB, MULT, ITE, WD};
 
 struct s_ast_node {
@@ -30,6 +30,22 @@ typedef struct s_ast_node* ast_node;
 			- WD : 0 : condition; 1 : do block
 		- BRANCH : like ROOT but yeah no
 */
+
+ast_node new_ast_node(int size);
+ast_node ast_create_node_from_int(int value);
+ast_node ast_create_node_from_variable(char* name);
+ast_node ast_create_add_node(ast_node left, ast_node right);
+ast_node ast_create_sub_node(ast_node left, ast_node right);
+ast_node ast_create_mult_node(ast_node left, ast_node right);
+ast_node ast_create_aff_node(char* name, ast_node value);
+ast_node ast_create_ITE_node(ast_node condition, ast_node then_block, ast_node else_block);
+ast_node ast_create_WD_node(ast_node condition, ast_node do_block);
+ast_node ast_create_branch(ast_node left, ast_node right);
+ast_node ast_create_node_from_ep(ast_node content);
+ast_node ast_create_node_from_cp(ast_node content);
+void initialize_ast();
+void ast_execute(ast_node root);
+
 
 void add_variable(char* name, int value);
 int get_value_from_variable(char* label);

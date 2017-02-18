@@ -88,6 +88,7 @@ ast_node new_ast_node(int size)
 	a->value = NULL;
 	a->child_num = size;
 	a->childs = (ast_node*) malloc(sizeof(ast_node) * size);
+
 	return ast_node;
 }
 
@@ -188,6 +189,24 @@ ast_node ast_create_branch(ast_node left, ast_node right)
 	return a;
 }
 
+ast_node ast_create_node_from_ep(ast_node content)
+{
+	ast_node a = new_ast_node(1);
+	a->category = SINGLE_BLOCK;
+	a->childs[0] = content;
+
+	return a;
+}
+
+ast_node ast_create_node_from_cp(ast_node content)
+{
+	ast_node a = new_ast_node(1);
+	a->category = SINGLE_BLOCK;
+	a->childs[0] = content;
+
+	return a;
+}
+
 void initialize_ast()
 {
 	a_root = (ast_node) malloc(sizeof(struct s_ast_node));
@@ -197,6 +216,11 @@ void initialize_ast()
 	a_root->value = NULL;
 	a_root->child_num = 1;
 	a_root->childs = (ast_node*) malloc(sizeof(ast_node));
+}
+
+void ast_execute(ast_node root)
+{
+	
 }
 
 //UTIL
