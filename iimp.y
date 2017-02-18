@@ -7,52 +7,46 @@
 %union{
     int ival;
 	char* sval;
+
+	ast_node node;
 }
 
 %token S_AF S_SK S_SE S_IF S_TH S_EL S_WH S_DO S_PL S_MO S_MU
 %token P_OPEN P_CLOSE
 %token V_INT V_VAR
 
-%type<ival> E
-%type<ival> T
-%type<ival> F
-%type<sval> C
-%type<sval> CC
+%type<node> E
+%type<node> T
+%type<node> F
+%type<node> C
+
 %type<ival> V_INT
 %type<sval> V_VAR
 
 %start STRT
 %%
-STRT	: C {printf("\n*** Done ***\n");}
+STRT	: C {ast_execute($1); printf("\n*** Done ***\n");}
 
-E		: E S_PL T {$$ = $1 + $3;}
-		| E S_MO T {$$ = $1 - $3;}
+E		: E S_PL T {$$ = ast_create_add_node($1, $3);}
+		| E S_MO T {$$ = ast_create_sub_node($1, $3);}
 		| T	{$$ = $1;}
 		;
 
-T		: T S_MU F {$$ = $1 * $3;}
+T		: T S_MU F {$$ = ast_create_mult_node($1, $3);}
 		| F {$$ = $1;}
 		;
 
-F		: P_OPEN E P_CLOSE {$$ = $2;}
-		| V_INT {$$ = $1;}
-		| V_VAR {$$ = get_value_from_variable($1);}
+F		: P_OPEN E P_CLOSE {$$ = ast_create_node_from_p($2);}
+		| V_INT {$$ = ast_create_node_from_int($1);}
+		| V_VAR {$$ = ast_create_node_from_variable($1);}
 		;
 
-C		: V_VAR S_AF E {assign_value_to_variable($1, $3);}
+C		: V_VAR S_AF E {$$ = ast_create_aff_node($1, $3);}
 		| S_SK { }
 //		| P_OPEN C P_CLOSE {$$ = $2;}
-		| S_IF E S_TH CC S_EL CC {if($2) {fprintf(stderr, "if"); $$ = $4; }else{fprintf(stderr, "else"); $$ = $6;};}
-//		| S_WH E S_DO C {if($2){$$ = concat($4, yytext);};}
-		| C S_SE C
-		;
-
-CC		: V_VAR S_AF E
-		| S_SK
-//		| P_OPEN C P_CLOSE {$$ = $2;}
-		| S_IF E S_TH CC S_EL CC
-//		| S_WH E S_DO C {if($2){$$ = concat($4, yytext);};}
-		| CC S_SE CC
+		| S_IF E S_TH C S_EL C {ast_create_ITE_node($2, $4, $6;}
+		| S_WH E S_DO C {ast_create_WD_node($2, $4);}
+		| C S_SE C {ast_create_branch($1, $3);}
 		;
 %%
 
