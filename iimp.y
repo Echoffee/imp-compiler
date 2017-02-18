@@ -16,6 +16,8 @@
 %type<ival> E
 %type<ival> T
 %type<ival> F
+%type<sval> C
+%type<sval> CC
 %type<ival> V_INT
 %type<sval> V_VAR
 
@@ -40,9 +42,17 @@ F		: P_OPEN E P_CLOSE {$$ = $2;}
 C		: V_VAR S_AF E {assign_value_to_variable($1, $3);}
 		| S_SK { }
 //		| P_OPEN C P_CLOSE {$$ = $2;}
-//		| S_IF E S_TH C S_EL C {if($2){$$ = $4;}else{$$ = $6;};}
+		| S_IF E S_TH CC S_EL CC {if($2) {fprintf(stderr, "if"); $$ = $4; }else{fprintf(stderr, "else"); $$ = $6;};}
 //		| S_WH E S_DO C {if($2){$$ = concat($4, yytext);};}
 		| C S_SE C
+		;
+
+CC		: V_VAR S_AF E
+		| S_SK
+//		| P_OPEN C P_CLOSE {$$ = $2;}
+		| S_IF E S_TH CC S_EL CC
+//		| S_WH E S_DO C {if($2){$$ = concat($4, yytext);};}
+		| CC S_SE CC
 		;
 %%
 
