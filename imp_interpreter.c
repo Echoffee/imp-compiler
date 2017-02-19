@@ -7,7 +7,7 @@ variable v_root = NULL;
 variable v_current = NULL;
 ast_node a_root = NULL;
 //PRE_AST
-void add_variable(char* name, int value)
+variable add_variable(char* name, int value)
 {
 	variable v = (variable) malloc(sizeof(struct s_variable));
 	v->name = (char*) malloc(sizeof(char) * strlen(name));
@@ -21,6 +21,8 @@ void add_variable(char* name, int value)
 	v_current = v;
 	if (v_root == NULL)
 		v_root = v;
+
+	return v;
 }
 
 variable get_variable(char* name)
@@ -28,6 +30,9 @@ variable get_variable(char* name)
 	variable c = v_root;
 	while (c != NULL && strcmp(c->name, name))
 		c = c->next;
+
+	if (c == NULL)
+		return add_variable(name, 0);
 
 	return c;
 }
@@ -220,6 +225,7 @@ void initialize_ast()
 
 void ast_execute(ast_node root)
 {
+	fprintf(stderr, "%s\n", "Execution...");
 	switch (root->category) {
 		case ROOT:
 			ast_execute(root->childs[0]);
@@ -290,6 +296,8 @@ void ast_execute(ast_node root)
 			root->value = root->childs[0]->value;
 		break;
 	}
+
+	fprintf(stderr, "%s\n", "Done here.");
 }
 
 //UTIL
@@ -303,4 +311,20 @@ void display_env()
 	}
 
 	printf("*** END ***\n");
+}
+
+void display_ast_tree(ast_node root, int stage)
+{
+	for (int i = 0; i < stage; i++)
+		fprintf(stderr, "|");
+	fprintf(stderr, "Node type : %d, %d\n", root->category, root->item );
+
+	for (int i = 0; i < root->child_num; i++)
+	{
+		display_ast_tree(root->childs[i], stage + 1);
+	}
+	for (int i = 0; i < stage; i++)
+		fprintf(stderr, "|");
+
+	fprintf(stderr, "__________________\n");
 }

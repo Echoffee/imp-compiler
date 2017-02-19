@@ -1,3 +1,5 @@
+%error-verbose
+
 %{
     #include <stdio.h>
 	#include "imp_interpreter.h"
@@ -25,7 +27,7 @@
 
 %start STRT
 %%
-STRT	: C {ast_execute($1); printf("\n*** Done ***\n");}
+STRT	: C {display_ast_tree($1, 0); ast_execute($1); printf("\n*** Done ***\n");}
 
 E		: E S_PL T {$$ = ast_create_add_node($1, $3);}
 		| E S_MO T {$$ = ast_create_sub_node($1, $3);}
@@ -41,12 +43,11 @@ F		: P_OPEN E P_CLOSE {$$ = ast_create_node_from_ep($2);}
 		| V_VAR {$$ = ast_create_node_from_variable($1);}
 		;
 
-C		: V_VAR S_AF E {$$ = ast_create_aff_node($1, $3);}
-		| S_SK { }
+C		: C S_SE C {$$ = ast_create_branch($1, $3);}
+		| V_VAR S_AF E {$$ = ast_create_aff_node($1, $3);}
 		| P_OPEN C P_CLOSE {$$ = ast_create_node_from_cp($2);}
-		| S_IF E S_TH C S_EL C {ast_create_ITE_node($2, $4, $6);}
-		| S_WH E S_DO C {ast_create_WD_node($2, $4);}
-		| C S_SE C {ast_create_branch($1, $3);}
+		| S_IF E S_TH C S_EL C {$$ = ast_create_ITE_node($2, $4, $6);}
+		| S_WH E S_DO C {$$ = ast_create_WD_node($2, $4);}
 		;
 %%
 

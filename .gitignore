@@ -3,3 +3,4 @@ iimp.tab.h
 lex.yy.c
 test.imp
 iimp
+iimp.output

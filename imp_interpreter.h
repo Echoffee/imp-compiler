@@ -50,8 +50,9 @@ void initialize_ast();
 void ast_execute(ast_node root);
 
 
-void add_variable(char* name, int value);
+variable add_variable(char* name, int value);
 int get_value_from_variable(char* label);
 void assign_value_to_variable(char* label, int value);
 char* concat(char* stat1, char* stat2);
 void display_env();
+void display_ast_tree(ast_node root, int stage);
