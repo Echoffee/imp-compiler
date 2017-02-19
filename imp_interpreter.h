@@ -46,6 +46,7 @@ ast_node ast_create_WD_node(ast_node condition, ast_node do_block);
 ast_node ast_create_branch(ast_node left, ast_node right);
 ast_node ast_create_node_from_ep(ast_node content);
 ast_node ast_create_node_from_cp(ast_node content);
+ast_node ast_create_empty_node();
 void initialize_ast();
 void ast_execute(ast_node root);
 

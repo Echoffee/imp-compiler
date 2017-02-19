@@ -212,6 +212,13 @@ ast_node ast_create_node_from_cp(ast_node content)
 	return a;
 }
 
+ast_node ast_create_empty_node()
+{
+	ast_node a = new_ast_node(0);
+
+	return a;
+}
+
 void initialize_ast()
 {
 	a_root = (ast_node) malloc(sizeof(struct s_ast_node));
@@ -225,7 +232,6 @@ void initialize_ast()
 
 void ast_execute(ast_node root)
 {
-	fprintf(stderr, "%s\n", "Execution...");
 	switch (root->category) {
 		case ROOT:
 			ast_execute(root->childs[0]);
@@ -257,6 +263,10 @@ void ast_execute(ast_node root)
 
 				case SUB:
 					root->value = root->childs[0]->value - root->childs[1]->value;
+				break;
+
+				case MULT:
+					root->value = root->childs[0]->value * root->childs[1]->value;
 				break;
 
 				case AFF:
@@ -297,7 +307,6 @@ void ast_execute(ast_node root)
 		break;
 	}
 
-	fprintf(stderr, "%s\n", "Done here.");
 }
 
 //UTIL
