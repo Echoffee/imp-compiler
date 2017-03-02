@@ -5,3 +5,6 @@ test.imp
 test.c3a
 iimp
 iimp.output
+ic3a.lex.yy.c
+ic3a.tab.c
+ic3a.tab.h
