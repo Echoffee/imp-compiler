@@ -171,7 +171,9 @@ ast_node new_ast_node(int size)
 
 ast_node ast_create_node_from_int(char* value)
 {
-	return(ast_create_node_from_variable(value));
+	ast_node a = ast_create_node_from_variable(value);
+	a->item = CONST;
+	return a;
 }
 
 ast_node ast_create_node_from_variable(char* name)
@@ -335,6 +337,7 @@ void ast_execute(ast_node root)
 				break;
 
 				case CONST:
+					output_write("", "Afc", root->svar, "", "_TEMP");
 					//:^)
 				break;
 			}
@@ -361,15 +364,16 @@ void ast_execute(ast_node root)
 
 				case AFF:
 					//root->childs[0]->var->value = root->childs[1]->value;
-					output_write(root->sname, "Af", root->childs[0]->svar, root->childs[1]->svar, "");
+					output_write(root->sname, "Af", root->childs[0]->svar, "_TEMP", "");
 				break;
 			}
 		break;
 
 		case LOOP:
+			output_write(root->sname, "Sk", "", "", "");
 			switch (root->item) {
 				case ITE:
-						output_write(root->sname, "Jz", root->childs[0]->svar, "", root->childs[2]->sname);
+						output_write("", "Jz", root->childs[0]->svar, "", root->childs[2]->sname);
 						ast_execute(root->childs[1]);
 						root->childs[3] = ast_create_jmp_node(a_current_branch);
 						ast_execute(root->childs[3]);
