@@ -8,8 +8,8 @@ Deadline : **Wednesday, March 7th at 11:59pm**
 
 ## Required work
 
-- ~~**IMP language interpreter**~~ (Infinite loop on *pex10.ip*)
-- **C3A language interpreter**
+- ~~**IMP language interpreter**~~ 9/10 passed tests (Infinite loop on *pex10.ip*)
+- ~~**C3A language interpreter**~~ **10/10** passed tests (**NO** Infinite loop on *pex10.res*)
 - **IMP -> C3A compiler**
 - **C3A -> Y86 compiler**
 
