@@ -6,6 +6,7 @@
 variable v_root = NULL;
 variable v_current = NULL;
 ast_node a_root = NULL;
+ast_node a_current_branch = NULL;
 etq_cmd e_root = NULL;
 etq_cmd e_current = NULL;
 FILE* output = NULL;
@@ -102,7 +103,6 @@ void set_name()
 	current_name[2 + i] = '\0';
 	
 	current_name_n++;
-	fprintf(stderr, "%d : %s\n", current_name_n, current_name);
 }
 
 etq_cmd add_etq_cmd(char* name, ast_node cmd)
@@ -163,7 +163,8 @@ ast_node new_ast_node(int size)
 	a->child_num = size;
 	a->childs = (ast_node*) malloc(sizeof(ast_node) * size);
 	a->svar = NULL;
-	add_etq_cmd(current_name, a);
+	a->sname = (char*) malloc (sizeof(char) * 8);
+	strcpy(a->sname, current_name);
 	set_name();
 	return a;
 }
@@ -292,6 +293,15 @@ ast_node ast_create_empty_node()
 	return a;
 }
 
+ast_node ast_create_jmp_node(ast_node dst)
+{
+	ast_node a = new_ast_node(1);
+	a->category = JMP;
+	a->childs[0] = dst;
+	
+	return a;
+}
+
 void initialize_ast()
 {
 	a_root = (ast_node) malloc(sizeof(struct s_ast_node));
@@ -315,7 +325,7 @@ void ast_execute(ast_node root)
 		break;
 
 		case EMPTY:
-			output_write("", "Sk", "", "", "");
+			output_write(root->sname, "Sk", "", "", "");
 		break;
 
 		case MEMBER:
@@ -336,22 +346,22 @@ void ast_execute(ast_node root)
 			switch (root->item) {
 				case ADD:
 					//root->value = root->childs[0]->value + root->childs[1]->value;
-					output_write("", "Pl", root->childs[0]->svar, root->childs[1]->svar, "_TEMP");
+					output_write(root->sname, "Pl", root->childs[0]->svar, root->childs[1]->svar, "_TEMP");
 				break;
 
 				case SUB:
 					//root->value = root->childs[0]->value - root->childs[1]->value;
-					output_write("", "Mo", root->childs[0]->svar, root->childs[1]->svar, "_TEMP");
+					output_write(root->sname, "Mo", root->childs[0]->svar, root->childs[1]->svar, "_TEMP");
 				break;
 
 				case MULT:
 					//root->value = root->childs[0]->value * root->childs[1]->value;
-					output_write("", "Mu", root->childs[0]->svar, root->childs[1]->svar, "_TEMP");
+					output_write(root->sname, "Mu", root->childs[0]->svar, root->childs[1]->svar, "_TEMP");
 				break;
 
 				case AFF:
 					//root->childs[0]->var->value = root->childs[1]->value;
-					output_write("", "Af", root->childs[0]->svar, root->childs[1]->svar, "");
+					output_write(root->sname, "Af", root->childs[0]->svar, root->childs[1]->svar, "");
 				break;
 			}
 		break;
@@ -359,7 +369,11 @@ void ast_execute(ast_node root)
 		case LOOP:
 			switch (root->item) {
 				case ITE:
-						output_write("", "Jz", root->childs[0]->svar, "", get_etq_cmd_from_ast(root->childs[2])->name);
+						output_write(root->sname, "Jz", root->childs[0]->svar, "", root->childs[2]->sname);
+						ast_execute(root->childs[1]);
+						root->childs[3] = ast_create_jmp_node(a_current_branch);
+						ast_execute(root->childs[3]);
+						ast_execute(root->childs[2]);
 				break;
 
 				case WD:
@@ -374,9 +388,15 @@ void ast_execute(ast_node root)
 		break;
 
 		case BRANCH:
+			a_current_branch = root;
 			ast_execute(root->childs[0]);
 			ast_execute(root->childs[1]);
+			output_write(root->sname, "Sk", "", "", "");
 		break;
+		
+		case JMP:
+			output_write(root->sname, "Jp", "", "", root->childs[0]->sname);
+			break;
 
 		case SINGLE_BLOCK:
 			ast_execute(root->childs[0]);

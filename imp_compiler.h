@@ -6,7 +6,7 @@ struct s_variable {
 
 typedef struct s_variable* variable;
 
-enum e_node_type { EMPTY, ROOT, MEMBER, OPERATOR, LOOP, BRANCH, SINGLE_BLOCK };
+enum e_node_type { EMPTY, ROOT, MEMBER, OPERATOR, LOOP, BRANCH, SINGLE_BLOCK , JMP};
 enum e_node_item { NONE, CONST, VAR, AFF, ADD, SUB, MULT, ITE, WD};
 
 typedef enum e_node_type node_type;
@@ -19,6 +19,7 @@ struct s_ast_node {
 	int value;		//may be empty
 	int child_num;
 	char* svar;
+	char* sname;
 	struct s_ast_node** childs;
 };
 
@@ -56,6 +57,7 @@ ast_node ast_create_branch(ast_node left, ast_node right);
 ast_node ast_create_node_from_ep(ast_node content);
 ast_node ast_create_node_from_cp(ast_node content);
 ast_node ast_create_empty_node();
+ast_node ast_create_jmp_node();
 void initialize_ast();
 void ast_execute(ast_node root);
 
