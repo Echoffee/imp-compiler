@@ -239,23 +239,25 @@ ast_node ast_create_aff_node(char* name, ast_node value)
 
 ast_node ast_create_ITE_node(ast_node condition, ast_node then_block, ast_node else_block)
 {
-	ast_node a = new_ast_node(3);
+	ast_node a = new_ast_node(4);
 	a->category = LOOP;
 	a->item = ITE;
 	a->childs[0] = condition;
 	a->childs[1] = then_block;
 	a->childs[2] = else_block;
+	a->childs[3] = NULL;
 
 	return a;
 }
 
 ast_node ast_create_WD_node(ast_node condition, ast_node do_block)
 {
-	ast_node a = new_ast_node(2);
+	ast_node a = new_ast_node(3);
 	a->category = LOOP;
 	a->item = WD;
 	a->childs[0] = condition;
 	a->childs[1] = do_block;
+	a->childs[2] = NULL;
 
 	return a;
 }
@@ -379,20 +381,25 @@ void ast_execute(ast_node root)
 						etq = root->childs[2]->childs[1]->sname;
 					else
 						etq = root->childs[2]->sname;
+						
 					output_write("", "Jz", root->childs[0]->svar, "", etq);
 					ast_execute(root->childs[1]);
 					root->childs[3] = ast_create_jmp_node(a_current_branch);
 					ast_execute(root->childs[3]);
 					ast_execute(root->childs[2]);
 				break;
-
+//////////////////////////////////////////////
 				case WD:
-					ast_execute(root->childs[0]);
-					while(root->childs[0]->value)
-					{
-						ast_execute(root->childs[1]);
-						ast_execute(root->childs[0]);
-					}
+					if (root->childs[1]->item == AFF)
+						etq = root->childs[1]->childs[1]->sname;
+					else
+						etq = root->childs[1]->sname;
+					
+					output_write("", "Jz", root->childs[0]->svar, "", etq);
+					ast_execute(root->childs[1]);
+					root->childs[2] = ast_create_jmp_node(a_current_branch);
+					ast_execute(root->childs[2]);
+					output_write("", "Jp", "", "", root->sname);
 				break;
 			}
 		break;
@@ -433,6 +440,7 @@ void output_write(char* etq, char* op, char* arg1, char* arg2, char* dst)
 
 void display_env()
 {
+	
 	printf("*** ENV ***\n");
 	while(v_root != NULL)
 	{
@@ -445,6 +453,9 @@ void display_env()
 
 void display_ast_tree(ast_node root, int stage)
 {
+	if (root == NULL)
+		return;
+	
 	for (int i = 0; i < stage; i++)
 		fprintf(stderr, "|");
 	fprintf(stderr, "Node type : %d, %d\n", root->category, root->item );
