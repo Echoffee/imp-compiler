@@ -122,6 +122,8 @@ ast_node ast_create_add_node(ast_node left, ast_node right)
 	a->item = ADD;
 	a->childs[0] = left;
 	a->childs[1] = right;
+	a->svar = (char*) malloc(sizeof(char) * 6);
+	strcpy(a->svar, "_TEMP");
 
 	return a;
 }
@@ -133,6 +135,8 @@ ast_node ast_create_sub_node(ast_node left, ast_node right)
 	a->item = SUB;
 	a->childs[0] = left;
 	a->childs[1] = right;
+	a->svar = (char*) malloc(sizeof(char) * 6);
+	strcpy(a->svar, "_TEMP");
 
 	return a;
 }
@@ -144,6 +148,8 @@ ast_node ast_create_mult_node(ast_node left, ast_node right)
 	a->item = MULT;
 	a->childs[0] = left;
 	a->childs[1] = right;
+	a->svar = (char*) malloc(sizeof(char) * 6);
+	strcpy(a->svar, "_TEMP");
 
 	return a;
 }
@@ -252,22 +258,22 @@ void ast_execute(ast_node root)
 		break;
 
 		case OPERATOR:
-			ast_execute(root->childs[0]);
 			ast_execute(root->childs[1]);
+			ast_execute(root->childs[0]);
 			switch (root->item) {
 				case ADD:
 					//root->value = root->childs[0]->value + root->childs[1]->value;
-					output_write("", "Pl", root->childs[0]->svar, root->childs[1]->svar, root->childs[2]->svar);
+					output_write("", "Pl", root->childs[0]->svar, root->childs[1]->svar, "_TEMP");
 				break;
 
 				case SUB:
 					//root->value = root->childs[0]->value - root->childs[1]->value;
-					output_write("", "Mo", root->childs[0]->svar, root->childs[1]->svar, root->childs[2]->svar);
+					output_write("", "Mo", root->childs[0]->svar, root->childs[1]->svar, "_TEMP");
 				break;
 
 				case MULT:
 					//root->value = root->childs[0]->value * root->childs[1]->value;
-					output_write("", "Mu", root->childs[0]->svar, root->childs[1]->svar, root->childs[2]->svar);
+					output_write("", "Mu", root->childs[0]->svar, root->childs[1]->svar, "_TEMP");
 				break;
 
 				case AFF:
