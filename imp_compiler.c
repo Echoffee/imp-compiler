@@ -6,7 +6,11 @@
 variable v_root = NULL;
 variable v_current = NULL;
 ast_node a_root = NULL;
+etq_cmd e_root = NULL;
+etq_cmd e_current = NULL;
 FILE* output = NULL;
+char* current_name = NULL;
+int current_name_n = NULL;
 //PRE_AST
 variable add_variable(char* name, int value)
 {
@@ -84,6 +88,70 @@ char* concat(char* stat1, char* stat2)
 	return result;
 }
 
+void set_name()
+{
+	int cn = current_name_n * 10;
+	current_name[0] = 'E'; 
+	current_name[1] = 'T';
+	int i = 0;
+	do {
+		cn = cn / 10;
+		i++;
+		current_name[1 + i] = '0' + cn % 10;
+	}while (cn / 10 > 0);
+	current_name[2 + i] = '\0';
+	
+	current_name_n++;
+	fprintf(stderr, "%d : %s\n", current_name_n, current_name);
+}
+
+etq_cmd add_etq_cmd(char* name, ast_node cmd)
+{
+	etq_cmd e = (etq_cmd) malloc(sizeof(struct s_etq_cmd));
+	e->name = (char*) malloc(sizeof(char) * strlen(name));
+	strcpy(e->name, name);
+	e->cmd = cmd;
+	e->next = NULL;
+
+	if (e_current != NULL)
+		e_current->next = e;
+
+	e_current = e;
+	if (e_root == NULL)
+		e_root = e;
+
+	return e;
+}
+
+etq_cmd get_etq_cmd(char* name)
+{
+	etq_cmd c = e_root;
+	while (c != NULL && strcmp(c->name, name))
+		c = c->next;
+
+	if (c == NULL)
+	{
+		fprintf(stderr, "ERROR WHILE GETTING ETQ_CMD **%s**\n", name);
+	}
+
+	return c;
+}
+
+etq_cmd get_etq_cmd_from_ast(ast_node n)
+{
+	etq_cmd c = e_root;
+	while (c != NULL && c == n)
+		c = c->next;
+
+	if (c == NULL)
+	{
+		fprintf(stderr, "ERROR WHILE GETTING ETQ_CMD");
+	}
+
+	return c;
+}
+
+
 //AST
 ast_node new_ast_node(int size)
 {
@@ -95,7 +163,8 @@ ast_node new_ast_node(int size)
 	a->child_num = size;
 	a->childs = (ast_node*) malloc(sizeof(ast_node) * size);
 	a->svar = NULL;
-
+	add_etq_cmd(current_name, a);
+	set_name();
 	return a;
 }
 
@@ -232,6 +301,10 @@ void initialize_ast()
 	a_root->value = 0;
 	a_root->child_num = 1;
 	a_root->childs = (ast_node*) malloc(sizeof(ast_node));
+	current_name = (char*) malloc(sizeof(char) * 8);
+	current_name_n = 0;
+	strcpy(current_name, "ET0");
+	
 }
 
 void ast_execute(ast_node root)
@@ -283,14 +356,10 @@ void ast_execute(ast_node root)
 			}
 		break;
 
-		/*case LOOP:
+		case LOOP:
 			switch (root->item) {
 				case ITE:
-					ast_execute(root->childs[0]);
-					if (root->childs[0]->value)
-						ast_execute(root->childs[1]);
-					else
-						ast_execute(root->childs[2]);
+						output_write("", "Jz", root->childs[0]->svar, "", get_etq_cmd_from_ast(root->childs[2])->name);
 				break;
 
 				case WD:
@@ -312,7 +381,7 @@ void ast_execute(ast_node root)
 		case SINGLE_BLOCK:
 			ast_execute(root->childs[0]);
 			root->value = root->childs[0]->value;
-		break;*/
+		break;
 	}
 
 }

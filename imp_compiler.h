@@ -24,6 +24,14 @@ struct s_ast_node {
 
 typedef struct s_ast_node* ast_node;
 
+struct s_etq_cmd {
+	char* name;
+	ast_node cmd;
+	struct s_etq_cmd* next;
+};
+
+typedef struct s_etq_cmd* etq_cmd;
+
 /*
 	ast_node childs :
 		- ROOT : n, basically the main()

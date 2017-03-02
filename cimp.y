@@ -68,6 +68,7 @@ int yyerror(char *s)
 
 int main()
 {
+	initialize_ast();
     yyparse();
 	display_env();
     return 0;
