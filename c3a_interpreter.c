@@ -8,6 +8,8 @@ variable v_current = NULL;
 etq_cmd e_root = NULL;
 etq_cmd e_current = NULL;
 ast_node a_root = NULL;
+ast_node a_current_skip = NULL;
+int global_stop = 0;
 //PRE_AST
 variable add_variable(char* name, int value)
 {
@@ -221,7 +223,10 @@ ast_node ast_create_branch(ast_node left, ast_node right)
 	a->item = NONE;
 	a->childs[0] = left;
 	a->childs[1] = right;
-
+	if (left->childs[0]->category == EMPTY)
+	{
+		left->childs[0]->childs[0] = a;
+	}	
 	return a;
 }
 
@@ -238,8 +243,10 @@ ast_node ast_create_label_cmd(char* label, ast_node command)
 
 ast_node ast_create_empty_node()
 {
-	ast_node a = new_ast_node(0);
+	ast_node a = new_ast_node(1);
 	a->category = EMPTY;
+	a->childs[0] = NULL;
+	a_current_skip = a;
 	return a;
 }
 
@@ -300,6 +307,9 @@ void initialize_ast()
 
 void ast_execute(ast_node root)
 {
+	if (global_stop)
+		return;
+		
 	fprintf(stderr, "NODE %d, %d\n", root->category, root->item);
 	switch (root->category) {
 		case ROOT:
@@ -307,7 +317,7 @@ void ast_execute(ast_node root)
 		break;
 
 		case EMPTY:
-			//welp
+			ast_execute(root->childs[0]->childs[1]);
 		break;
 
 		case MEMBER:
@@ -362,9 +372,11 @@ void ast_execute(ast_node root)
 			ast_execute(root->childs[1]);
 			if (!root->childs[0]->value)
 				ast_execute(root->childs[1]->childs[0]);
-
+		break;
+		
 		case STOP:
-			return;
+			global_stop = 1;
+		return;
 
 		case BRANCH:
 			ast_execute(root->childs[0]);
@@ -401,10 +413,12 @@ void display_ast_tree(ast_node root, int stage)
 		fprintf(stderr, "|");
 	fprintf(stderr, "Node type : %d, %d\n", root->category, root->item );
 
-	for (int i = 0; i < root->child_num; i++)
-	{
-		display_ast_tree(root->childs[i], stage + 1);
-	}
+	if (root->category != EMPTY)
+		for (int i = 0; i < root->child_num; i++)
+		{
+			display_ast_tree(root->childs[i], stage + 1);
+		}
+	
 	for (int i = 0; i < stage; i++)
 		fprintf(stderr, "|");
 
