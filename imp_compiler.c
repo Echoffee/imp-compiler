@@ -321,6 +321,8 @@ void initialize_ast()
 
 void ast_execute(ast_node root)
 {
+	char* etq = NULL;
+	
 	switch (root->category) {
 		case ROOT:
 			ast_execute(root->childs[0]);
@@ -337,7 +339,7 @@ void ast_execute(ast_node root)
 				break;
 
 				case CONST:
-					output_write("", "Afc", root->svar, "", "_TEMP");
+					output_write(root->sname, "Afc", root->svar, "", "_TEMP");
 					//:^)
 				break;
 			}
@@ -373,11 +375,15 @@ void ast_execute(ast_node root)
 			output_write(root->sname, "Sk", "", "", "");
 			switch (root->item) {
 				case ITE:
-						output_write("", "Jz", root->childs[0]->svar, "", root->childs[2]->sname);
-						ast_execute(root->childs[1]);
-						root->childs[3] = ast_create_jmp_node(a_current_branch);
-						ast_execute(root->childs[3]);
-						ast_execute(root->childs[2]);
+					if (root->childs[2]->item == AFF)
+						etq = root->childs[2]->childs[1]->sname;
+					else
+						etq = root->childs[2]->sname;
+					output_write("", "Jz", root->childs[0]->svar, "", etq);
+					ast_execute(root->childs[1]);
+					root->childs[3] = ast_create_jmp_node(a_current_branch);
+					ast_execute(root->childs[3]);
+					ast_execute(root->childs[2]);
 				break;
 
 				case WD:
@@ -399,7 +405,11 @@ void ast_execute(ast_node root)
 		break;
 		
 		case JMP:
-			output_write(root->sname, "Jp", "", "", root->childs[0]->sname);
+			if (root->childs[0]->item == AFF)
+				etq = root->childs[0]->childs[1]->sname;
+			else
+				etq = root->childs[0]->sname;
+			output_write(root->sname, "Jp", "", "", etq);
 			break;
 
 		case SINGLE_BLOCK:
