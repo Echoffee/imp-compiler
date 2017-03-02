@@ -1,0 +1,664 @@
+State 29 conflicts: 1 shift/reduce
+
+
+Grammar
+
+    0 $accept: STRT $end
+
+    1 STRT: C
+
+    2 C: C S_EOL C
+    3  | L
+
+    4 L: ETQ S_SE CMD
+    5  | S_SE CMD
+
+    6 ETQ: V_VAR
+
+    7 V: V_INT
+    8  | V_VAR
+    9  | O_POS V
+   10  | O_NEG V
+
+   11 CMD: S_PL S_SE V S_SE V S_SE V_VAR
+   12    | S_MO S_SE V S_SE V S_SE V_VAR
+   13    | S_MU S_SE V S_SE V S_SE V_VAR
+   14    | S_AF S_SE V_VAR S_SE V S_SE
+   15    | S_AFC S_SE V S_SE S_SE V_VAR
+   16    | S_SK S_SE S_SE S_SE
+   17    | S_JP S_SE S_SE S_SE ETQ
+   18    | S_JZ S_SE V S_SE S_SE ETQ
+   19    | S_ST S_SE S_SE S_SE
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+S_AF (258) 14
+S_AFC (259) 15
+S_SK (260) 16
+S_SE (261) 4 5 11 12 13 14 15 16 17 18 19
+S_PL (262) 11
+S_MO (263) 12
+S_MU (264) 13
+S_JP (265) 17
+S_JZ (266) 18
+S_ST (267) 19
+O_POS (268) 9
+O_NEG (269) 10
+S_EOL (270) 2
+V_INT (271) 7
+V_VAR (272) 6 8 11 12 13 14 15
+
+
+Nonterminals, with rules where they appear
+
+$accept (18)
+    on left: 0
+STRT (19)
+    on left: 1, on right: 0
+C (20)
+    on left: 2 3, on right: 1 2
+L (21)
+    on left: 4 5, on right: 3
+ETQ (22)
+    on left: 6, on right: 4 17 18
+V (23)
+    on left: 7 8 9 10, on right: 9 10 11 12 13 14 15 18
+CMD (24)
+    on left: 11 12 13 14 15 16 17 18 19, on right: 4 5
+
+
+State 0
+
+    0 $accept: . STRT $end
+
+    S_SE   shift, and go to state 1
+    V_VAR  shift, and go to state 2
+
+    STRT  go to state 3
+    C     go to state 4
+    L     go to state 5
+    ETQ   go to state 6
+
+
+State 1
+
+    5 L: S_SE . CMD
+
+    S_AF   shift, and go to state 7
+    S_AFC  shift, and go to state 8
+    S_SK   shift, and go to state 9
+    S_PL   shift, and go to state 10
+    S_MO   shift, and go to state 11
+    S_MU   shift, and go to state 12
+    S_JP   shift, and go to state 13
+    S_JZ   shift, and go to state 14
+    S_ST   shift, and go to state 15
+
+    CMD  go to state 16
+
+
+State 2
+
+    6 ETQ: V_VAR .
+
+    $default  reduce using rule 6 (ETQ)
+
+
+State 3
+
+    0 $accept: STRT . $end
+
+    $end  shift, and go to state 17
+
+
+State 4
+
+    1 STRT: C .
+    2 C: C . S_EOL C
+
+    S_EOL  shift, and go to state 18
+
+    $default  reduce using rule 1 (STRT)
+
+
+State 5
+
+    3 C: L .
+
+    $default  reduce using rule 3 (C)
+
+
+State 6
+
+    4 L: ETQ . S_SE CMD
+
+    S_SE  shift, and go to state 19
+
+
+State 7
+
+   14 CMD: S_AF . S_SE V_VAR S_SE V S_SE
+
+    S_SE  shift, and go to state 20
+
+
+State 8
+
+   15 CMD: S_AFC . S_SE V S_SE S_SE V_VAR
+
+    S_SE  shift, and go to state 21
+
+
+State 9
+
+   16 CMD: S_SK . S_SE S_SE S_SE
+
+    S_SE  shift, and go to state 22
+
+
+State 10
+
+   11 CMD: S_PL . S_SE V S_SE V S_SE V_VAR
+
+    S_SE  shift, and go to state 23
+
+
+State 11
+
+   12 CMD: S_MO . S_SE V S_SE V S_SE V_VAR
+
+    S_SE  shift, and go to state 24
+
+
+State 12
+
+   13 CMD: S_MU . S_SE V S_SE V S_SE V_VAR
+
+    S_SE  shift, and go to state 25
+
+
+State 13
+
+   17 CMD: S_JP . S_SE S_SE S_SE ETQ
+
+    S_SE  shift, and go to state 26
+
+
+State 14
+
+   18 CMD: S_JZ . S_SE V S_SE S_SE ETQ
+
+    S_SE  shift, and go to state 27
+
+
+State 15
+
+   19 CMD: S_ST . S_SE S_SE S_SE
+
+    S_SE  shift, and go to state 28
+
+
+State 16
+
+    5 L: S_SE CMD .
+
+    $default  reduce using rule 5 (L)
+
+
+State 17
+
+    0 $accept: STRT $end .
+
+    $default  accept
+
+
+State 18
+
+    2 C: C S_EOL . C
+
+    S_SE   shift, and go to state 1
+    V_VAR  shift, and go to state 2
+
+    C    go to state 29
+    L    go to state 5
+    ETQ  go to state 6
+
+
+State 19
+
+    4 L: ETQ S_SE . CMD
+
+    S_AF   shift, and go to state 7
+    S_AFC  shift, and go to state 8
+    S_SK   shift, and go to state 9
+    S_PL   shift, and go to state 10
+    S_MO   shift, and go to state 11
+    S_MU   shift, and go to state 12
+    S_JP   shift, and go to state 13
+    S_JZ   shift, and go to state 14
+    S_ST   shift, and go to state 15
+
+    CMD  go to state 30
+
+
+State 20
+
+   14 CMD: S_AF S_SE . V_VAR S_SE V S_SE
+
+    V_VAR  shift, and go to state 31
+
+
+State 21
+
+   15 CMD: S_AFC S_SE . V S_SE S_SE V_VAR
+
+    O_POS  shift, and go to state 32
+    O_NEG  shift, and go to state 33
+    V_INT  shift, and go to state 34
+    V_VAR  shift, and go to state 35
+
+    V  go to state 36
+
+
+State 22
+
+   16 CMD: S_SK S_SE . S_SE S_SE
+
+    S_SE  shift, and go to state 37
+
+
+State 23
+
+   11 CMD: S_PL S_SE . V S_SE V S_SE V_VAR
+
+    O_POS  shift, and go to state 32
+    O_NEG  shift, and go to state 33
+    V_INT  shift, and go to state 34
+    V_VAR  shift, and go to state 35
+
+    V  go to state 38
+
+
+State 24
+
+   12 CMD: S_MO S_SE . V S_SE V S_SE V_VAR
+
+    O_POS  shift, and go to state 32
+    O_NEG  shift, and go to state 33
+    V_INT  shift, and go to state 34
+    V_VAR  shift, and go to state 35
+
+    V  go to state 39
+
+
+State 25
+
+   13 CMD: S_MU S_SE . V S_SE V S_SE V_VAR
+
+    O_POS  shift, and go to state 32
+    O_NEG  shift, and go to state 33
+    V_INT  shift, and go to state 34
+    V_VAR  shift, and go to state 35
+
+    V  go to state 40
+
+
+State 26
+
+   17 CMD: S_JP S_SE . S_SE S_SE ETQ
+
+    S_SE  shift, and go to state 41
+
+
+State 27
+
+   18 CMD: S_JZ S_SE . V S_SE S_SE ETQ
+
+    O_POS  shift, and go to state 32
+    O_NEG  shift, and go to state 33
+    V_INT  shift, and go to state 34
+    V_VAR  shift, and go to state 35
+
+    V  go to state 42
+
+
+State 28
+
+   19 CMD: S_ST S_SE . S_SE S_SE
+
+    S_SE  shift, and go to state 43
+
+
+State 29
+
+    2 C: C . S_EOL C
+    2  | C S_EOL C .
+
+    S_EOL  shift, and go to state 18
+
+    S_EOL     [reduce using rule 2 (C)]
+    $default  reduce using rule 2 (C)
+
+
+State 30
+
+    4 L: ETQ S_SE CMD .
+
+    $default  reduce using rule 4 (L)
+
+
+State 31
+
+   14 CMD: S_AF S_SE V_VAR . S_SE V S_SE
+
+    S_SE  shift, and go to state 44
+
+
+State 32
+
+    9 V: O_POS . V
+
+    O_POS  shift, and go to state 32
+    O_NEG  shift, and go to state 33
+    V_INT  shift, and go to state 34
+    V_VAR  shift, and go to state 35
+
+    V  go to state 45
+
+
+State 33
+
+   10 V: O_NEG . V
+
+    O_POS  shift, and go to state 32
+    O_NEG  shift, and go to state 33
+    V_INT  shift, and go to state 34
+    V_VAR  shift, and go to state 35
+
+    V  go to state 46
+
+
+State 34
+
+    7 V: V_INT .
+
+    $default  reduce using rule 7 (V)
+
+
+State 35
+
+    8 V: V_VAR .
+
+    $default  reduce using rule 8 (V)
+
+
+State 36
+
+   15 CMD: S_AFC S_SE V . S_SE S_SE V_VAR
+
+    S_SE  shift, and go to state 47
+
+
+State 37
+
+   16 CMD: S_SK S_SE S_SE . S_SE
+
+    S_SE  shift, and go to state 48
+
+
+State 38
+
+   11 CMD: S_PL S_SE V . S_SE V S_SE V_VAR
+
+    S_SE  shift, and go to state 49
+
+
+State 39
+
+   12 CMD: S_MO S_SE V . S_SE V S_SE V_VAR
+
+    S_SE  shift, and go to state 50
+
+
+State 40
+
+   13 CMD: S_MU S_SE V . S_SE V S_SE V_VAR
+
+    S_SE  shift, and go to state 51
+
+
+State 41
+
+   17 CMD: S_JP S_SE S_SE . S_SE ETQ
+
+    S_SE  shift, and go to state 52
+
+
+State 42
+
+   18 CMD: S_JZ S_SE V . S_SE S_SE ETQ
+
+    S_SE  shift, and go to state 53
+
+
+State 43
+
+   19 CMD: S_ST S_SE S_SE . S_SE
+
+    S_SE  shift, and go to state 54
+
+
+State 44
+
+   14 CMD: S_AF S_SE V_VAR S_SE . V S_SE
+
+    O_POS  shift, and go to state 32
+    O_NEG  shift, and go to state 33
+    V_INT  shift, and go to state 34
+    V_VAR  shift, and go to state 35
+
+    V  go to state 55
+
+
+State 45
+
+    9 V: O_POS V .
+
+    $default  reduce using rule 9 (V)
+
+
+State 46
+
+   10 V: O_NEG V .
+
+    $default  reduce using rule 10 (V)
+
+
+State 47
+
+   15 CMD: S_AFC S_SE V S_SE . S_SE V_VAR
+
+    S_SE  shift, and go to state 56
+
+
+State 48
+
+   16 CMD: S_SK S_SE S_SE S_SE .
+
+    $default  reduce using rule 16 (CMD)
+
+
+State 49
+
+   11 CMD: S_PL S_SE V S_SE . V S_SE V_VAR
+
+    O_POS  shift, and go to state 32
+    O_NEG  shift, and go to state 33
+    V_INT  shift, and go to state 34
+    V_VAR  shift, and go to state 35
+
+    V  go to state 57
+
+
+State 50
+
+   12 CMD: S_MO S_SE V S_SE . V S_SE V_VAR
+
+    O_POS  shift, and go to state 32
+    O_NEG  shift, and go to state 33
+    V_INT  shift, and go to state 34
+    V_VAR  shift, and go to state 35
+
+    V  go to state 58
+
+
+State 51
+
+   13 CMD: S_MU S_SE V S_SE . V S_SE V_VAR
+
+    O_POS  shift, and go to state 32
+    O_NEG  shift, and go to state 33
+    V_INT  shift, and go to state 34
+    V_VAR  shift, and go to state 35
+
+    V  go to state 59
+
+
+State 52
+
+   17 CMD: S_JP S_SE S_SE S_SE . ETQ
+
+    V_VAR  shift, and go to state 2
+
+    ETQ  go to state 60
+
+
+State 53
+
+   18 CMD: S_JZ S_SE V S_SE . S_SE ETQ
+
+    S_SE  shift, and go to state 61
+
+
+State 54
+
+   19 CMD: S_ST S_SE S_SE S_SE .
+
+    $default  reduce using rule 19 (CMD)
+
+
+State 55
+
+   14 CMD: S_AF S_SE V_VAR S_SE V . S_SE
+
+    S_SE  shift, and go to state 62
+
+
+State 56
+
+   15 CMD: S_AFC S_SE V S_SE S_SE . V_VAR
+
+    V_VAR  shift, and go to state 63
+
+
+State 57
+
+   11 CMD: S_PL S_SE V S_SE V . S_SE V_VAR
+
+    S_SE  shift, and go to state 64
+
+
+State 58
+
+   12 CMD: S_MO S_SE V S_SE V . S_SE V_VAR
+
+    S_SE  shift, and go to state 65
+
+
+State 59
+
+   13 CMD: S_MU S_SE V S_SE V . S_SE V_VAR
+
+    S_SE  shift, and go to state 66
+
+
+State 60
+
+   17 CMD: S_JP S_SE S_SE S_SE ETQ .
+
+    $default  reduce using rule 17 (CMD)
+
+
+State 61
+
+   18 CMD: S_JZ S_SE V S_SE S_SE . ETQ
+
+    V_VAR  shift, and go to state 2
+
+    ETQ  go to state 67
+
+
+State 62
+
+   14 CMD: S_AF S_SE V_VAR S_SE V S_SE .
+
+    $default  reduce using rule 14 (CMD)
+
+
+State 63
+
+   15 CMD: S_AFC S_SE V S_SE S_SE V_VAR .
+
+    $default  reduce using rule 15 (CMD)
+
+
+State 64
+
+   11 CMD: S_PL S_SE V S_SE V S_SE . V_VAR
+
+    V_VAR  shift, and go to state 68
+
+
+State 65
+
+   12 CMD: S_MO S_SE V S_SE V S_SE . V_VAR
+
+    V_VAR  shift, and go to state 69
+
+
+State 66
+
+   13 CMD: S_MU S_SE V S_SE V S_SE . V_VAR
+
+    V_VAR  shift, and go to state 70
+
+
+State 67
+
+   18 CMD: S_JZ S_SE V S_SE S_SE ETQ .
+
+    $default  reduce using rule 18 (CMD)
+
+
+State 68
+
+   11 CMD: S_PL S_SE V S_SE V S_SE V_VAR .
+
+    $default  reduce using rule 11 (CMD)
+
+
+State 69
+
+   12 CMD: S_MO S_SE V S_SE V S_SE V_VAR .
+
+    $default  reduce using rule 12 (CMD)
+
+
+State 70
+
+   13 CMD: S_MU S_SE V S_SE V S_SE V_VAR .
+
+    $default  reduce using rule 13 (CMD)

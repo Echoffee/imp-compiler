@@ -131,6 +131,7 @@ ast_node new_ast_node(int size)
 	a->value = 0;
 	a->child_num = size;
 	a->childs = (ast_node*) malloc(sizeof(ast_node) * size);
+	a->svar = NULL;
 
 	return a;
 }
@@ -166,38 +167,38 @@ ast_node ast_create_op_node(int factor, ast_node value)
 	return a;
 }
 
-ast_node ast_create_add_node(ast_node left, ast_node right, ast_node dest)
+ast_node ast_create_add_node(ast_node left, ast_node right, char* dest)
 {
-	ast_node a = new_ast_node(3);
+	ast_node a = new_ast_node(2);
 	a->category = OPERATOR;
 	a->item = ADD;
 	a->childs[0] = left;
 	a->childs[1] = right;
-	a->childs[2] = dest;
+	a->var = get_variable(dest);
 
 	return a;
 }
 
-ast_node ast_create_sub_node(ast_node left, ast_node right, ast_node dest)
+ast_node ast_create_sub_node(ast_node left, ast_node right, char* dest)
 {
-	ast_node a = new_ast_node(3);
+	ast_node a = new_ast_node(2);
 	a->category = OPERATOR;
 	a->item = SUB;
 	a->childs[0] = left;
 	a->childs[1] = right;
-	a->childs[2] = dest;
+	a->var = get_variable(dest);
 
 	return a;
 }
 
-ast_node ast_create_mult_node(ast_node left, ast_node right, ast_node dest)
+ast_node ast_create_mult_node(ast_node left, ast_node right, char* dest)
 {
-	ast_node a = new_ast_node(3);
+	ast_node a = new_ast_node(2);
 	a->category = OPERATOR;
 	a->item = MULT;
 	a->childs[0] = left;
 	a->childs[1] = right;
-	a->childs[2] = dest;
+	a->var = get_variable(dest);
 
 	return a;
 }
@@ -217,18 +218,20 @@ ast_node ast_create_branch(ast_node left, ast_node right)
 {
 	ast_node a = new_ast_node(2);
 	a->category = BRANCH;
+	a->item = NONE;
 	a->childs[0] = left;
 	a->childs[1] = right;
 
 	return a;
 }
 
-ast_node ast_create_label_cmd(ast_node label, ast_node command)
+ast_node ast_create_label_cmd(char* label, ast_node command)
 {
-	ast_node a = new_ast_node(2);
+	ast_node a = new_ast_node(1);
 	a->category = LABEL;
-	a->childs[0] = label;
-	a->childs[1] = command;
+	a->item = NONE;
+	a->childs[0] = command;
+	add_etq_cmd(label, command);
 
 	return a;
 }
@@ -236,7 +239,51 @@ ast_node ast_create_label_cmd(ast_node label, ast_node command)
 ast_node ast_create_empty_node()
 {
 	ast_node a = new_ast_node(0);
+	a->category = EMPTY;
+	return a;
+}
 
+ast_node ast_create_jmp_node(char* etq)
+{
+	ast_node a = new_ast_node(1);
+	a->category = JMP;
+	a->item = NONE;
+	a->value = 0;
+	a->childs[0] = ast_create_goto_node(etq);
+	
+	return a;
+}
+
+ast_node ast_create_cond_jmp_node(ast_node cond, char* etq)
+{
+	ast_node a = new_ast_node(2);
+	a->category = JMPC;
+	a->item = NONE;
+	a->value = 0;
+	a->childs[0] = cond;
+	a->childs[1] = ast_create_goto_node(etq);
+	
+	return a;
+}
+
+ast_node ast_create_goto_node(char* etq)
+{
+	ast_node a = new_ast_node(1);
+	a->category = MEMBER;
+	a->item = ETQ;
+	a->svar = (char*) malloc(strlen(etq) * sizeof(char));
+	a->childs[0] = NULL;
+	strcpy(a->svar, etq);
+	
+	return a;
+}
+
+ast_node ast_create_stop_node()
+{
+	ast_node a = new_ast_node(0);
+	a->category = STOP;
+	a->item = NONE;
+	
 	return a;
 }
 
@@ -253,6 +300,7 @@ void initialize_ast()
 
 void ast_execute(ast_node root)
 {
+	fprintf(stderr, "NODE %d, %d\n", root->category, root->item);
 	switch (root->category) {
 		case ROOT:
 			ast_execute(root->childs[0]);
@@ -271,6 +319,10 @@ void ast_execute(ast_node root)
 				case CONST:
 					//:^)
 				break;
+				
+				case ETQ:
+					root->childs[0] = get_node_from_etq_cmd(root->svar);
+				break;
 			}
 		break;
 
@@ -279,15 +331,15 @@ void ast_execute(ast_node root)
 			ast_execute(root->childs[1]);
 			switch (root->item) {
 				case ADD:
-					root->value = root->childs[0]->value + root->childs[1]->value;
+					root->var->value = root->childs[0]->value + root->childs[1]->value;
 				break;
 
 				case SUB:
-					root->value = root->childs[0]->value - root->childs[1]->value;
+					root->var->value = root->childs[0]->value - root->childs[1]->value;
 				break;
 
 				case MULT:
-					root->value = root->childs[0]->value * root->childs[1]->value;
+					root->var->value = root->childs[0]->value * root->childs[1]->value;
 				break;
 
 				case AFF:
@@ -295,27 +347,24 @@ void ast_execute(ast_node root)
 				break;
 			}
 		break;
-
-		case LOOP:
-			switch (root->item) {
-				case ITE:
-					ast_execute(root->childs[0]);
-					if (root->childs[0]->value)
-						ast_execute(root->childs[1]);
-					else
-						ast_execute(root->childs[2]);
-				break;
-
-				case WD:
-					ast_execute(root->childs[0]);
-					while(root->childs[0]->value)
-					{
-						ast_execute(root->childs[1]);
-						ast_execute(root->childs[0]);
-					}
-				break;
-			}
+		
+		case LABEL:
+			ast_execute(root->childs[0]);
 		break;
+		
+		case JMP:
+			ast_execute(root->childs[0]);
+			ast_execute(root->childs[0]->childs[0]);
+		break;
+
+		case JMPC:
+			ast_execute(root->childs[0]);
+			ast_execute(root->childs[1]);
+			if (!root->childs[0]->value)
+				ast_execute(root->childs[1]->childs[0]);
+
+		case STOP:
+			return;
 
 		case BRANCH:
 			ast_execute(root->childs[0]);
@@ -345,6 +394,9 @@ void display_env()
 
 void display_ast_tree(ast_node root, int stage)
 {
+	if (root == NULL)
+		return;
+	
 	for (int i = 0; i < stage; i++)
 		fprintf(stderr, "|");
 	fprintf(stderr, "Node type : %d, %d\n", root->category, root->item );

@@ -20,7 +20,7 @@
 
 %type<node> C
 %type<node> L
-%type<node> ETQ
+%type<sval> ETQ
 %type<node> V
 %type<node> CMD
 
@@ -29,17 +29,17 @@
 
 %start STRT
 %%
-STRT	: C {display_ast_tree($1, 0); ast_execute($1); printf("\n*** Done ***\n");}
+STRT	: C {display_ast_tree($1, 0); ast_execute($1); fprintf(stderr, "\n*** Done ***\n");}
 
 C		: C S_EOL C {$$ = ast_create_branch($1, $3);}
-		| L {$$ = $1}
+		| L { $$ = $1; }
 		;
 
 L		: ETQ S_SE CMD { $$ = ast_create_label_cmd($1, $3);}
-		|     S_SE CMD { $$ = ast_create_cmd($2);}
+		|     S_SE CMD { $$ = $2; }
 		;
 
-ETQ		: V_VAR { $$ = ast_create_node_from_variable($1);}
+ETQ		: V_VAR { $$ = $1;}
 		;
 
 V		: V_INT { $$ = ast_create_node_from_int($1);}
@@ -54,8 +54,9 @@ CMD		: S_PL S_SE V S_SE V S_SE V_VAR { $$ = ast_create_add_node($3, $5, $7); }
 		| S_AF S_SE V_VAR S_SE V S_SE { $$ = ast_create_aff_node($3, $5); }
 		| S_AFC S_SE V S_SE S_SE V_VAR { $$ = ast_create_aff_node($6, $3); }
 		| S_SK S_SE S_SE S_SE { $$ = ast_create_empty_node(); }
-		| S_JP S_SE S_SE S_SE V_VAR { $$ = ast_create_jmp_node($5); }
-		| S_JZ S_SE V S_SE S_SE V_VAR { $$ = ast_create_cond_jmp_node($3, $6); }
+		| S_SK S_SE S_SE S_SE V_VAR{ $$ = ast_create_empty_node(); }
+		| S_JP S_SE S_SE S_SE ETQ { $$ = ast_create_jmp_node($5); }
+		| S_JZ S_SE V S_SE S_SE ETQ { $$ = ast_create_cond_jmp_node($3, $6); }
 		| S_ST S_SE S_SE S_SE { $$ = ast_create_stop_node(); }
 		;
 
