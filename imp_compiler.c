@@ -305,7 +305,7 @@ void display_env()
 	fprintf(stderr, "*** ENV ***\n");
 	while(v_root != NULL)
 	{
-		printf("Var %s : %d\n", v_root->name, v_root->value);
+		fprintf(stderr, "Var %s : %d\n", v_root->name, v_root->value);
 		v_root = v_root->next;
 	}
 
