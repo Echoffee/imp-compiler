@@ -4,7 +4,6 @@
 #include "imp_compiler.h"
 
 variable v_root = NULL;
-variable v_current = NULL;
 ast_node a_root = NULL;
 ast_node a_current_branch = NULL;
 etq_cmd e_root = NULL;
@@ -12,82 +11,6 @@ etq_cmd e_current = NULL;
 FILE* output = NULL;
 char* current_name = NULL;
 int current_name_n = NULL;
-//PRE_AST
-variable add_variable(char* name, int value)
-{
-	variable v = (variable) malloc(sizeof(struct s_variable));
-	v->name = (char*) malloc(sizeof(char) * strlen(name));
-	strcpy(v->name, name);
-	v->value = value;
-	v->next = NULL;
-
-	if (v_current != NULL)
-		v_current->next = v;
-
-	v_current = v;
-	if (v_root == NULL)
-		v_root = v;
-
-	return v;
-}
-
-variable get_variable(char* name)
-{
-	variable c = v_root;
-	while (c != NULL && strcmp(c->name, name))
-		c = c->next;
-
-	if (c == NULL)
-		return add_variable(name, 0);
-
-	return c;
-}
-
-int get_value_from_variable(char* label)
-{
-	variable c = v_root;
-	while (c != NULL && strcmp(c->name, label))
-		c = c->next;
-
-	if (c != NULL)
-		return c->value;
-	else
-		return 0;
-}
-
-void assign_value_to_variable(char* label, int value)
-{
-	variable c = v_root;
-	while (c != NULL && strcmp(c->name, label))
-		c = c->next;
-
-		if (c != NULL)
-			c->value = value;
-		else
-			add_variable(label, value);
-}
-
-char* concat(char* stat1, char* stat2)
-{
-	char* result = (char*) malloc(sizeof(char) * (2 + strlen(stat1) + strlen(stat2)));
-	int i = 0;
-	while (i < strlen(stat1))
-	{
-		result[i] = stat1[i];
-		i++;
-	}
-
-	result[i] = ';';
-	i = 0;
-	while (i < strlen(stat2))
-	{
-		result[strlen(stat1) + i] = stat2[i];
-		i++;
-	}
-
-	result[strlen(stat1) + i] = '\0';
-	return result;
-}
 
 void set_name()
 {
@@ -104,53 +27,6 @@ void set_name()
 	
 	current_name_n++;
 }
-
-etq_cmd add_etq_cmd(char* name, ast_node cmd)
-{
-	etq_cmd e = (etq_cmd) malloc(sizeof(struct s_etq_cmd));
-	e->name = (char*) malloc(sizeof(char) * strlen(name));
-	strcpy(e->name, name);
-	e->cmd = cmd;
-	e->next = NULL;
-
-	if (e_current != NULL)
-		e_current->next = e;
-
-	e_current = e;
-	if (e_root == NULL)
-		e_root = e;
-
-	return e;
-}
-
-etq_cmd get_etq_cmd(char* name)
-{
-	etq_cmd c = e_root;
-	while (c != NULL && strcmp(c->name, name))
-		c = c->next;
-
-	if (c == NULL)
-	{
-		fprintf(stderr, "ERROR WHILE GETTING ETQ_CMD **%s**\n", name);
-	}
-
-	return c;
-}
-
-etq_cmd get_etq_cmd_from_ast(ast_node n)
-{
-	etq_cmd c = e_root;
-	while (c != NULL && c == n)
-		c = c->next;
-
-	if (c == NULL)
-	{
-		fprintf(stderr, "ERROR WHILE GETTING ETQ_CMD");
-	}
-
-	return c;
-}
-
 
 //AST
 ast_node new_ast_node(int size)
@@ -172,7 +48,6 @@ ast_node new_ast_node(int size)
 ast_node ast_create_node_from_int(char* value)	//To be reviewed
 {
 	ast_node a = ast_create_node_from_variable(value);
-	fprintf(stderr, "********%s********\n", a->sname);
 	a->item = CONST;
 	return a;
 }
@@ -188,37 +63,11 @@ ast_node ast_create_node_from_variable(char* name)
 	return a;
 }
 
-ast_node ast_create_add_node(ast_node left, ast_node right)
+ast_node ast_create_o_node(ast_node left, ast_node right, node_item item)
 {
 	ast_node a = new_ast_node(2);
 	a->category = OPERATOR;
-	a->item = ADD;
-	a->childs[0] = left;
-	a->childs[1] = right;
-	a->svar = (char*) malloc(sizeof(char) * 6);
-	strcpy(a->svar, "_TEMP");
-
-	return a;
-}
-
-ast_node ast_create_sub_node(ast_node left, ast_node right)
-{
-	ast_node a = new_ast_node(2);
-	a->category = OPERATOR;
-	a->item = SUB;
-	a->childs[0] = left;
-	a->childs[1] = right;
-	a->svar = (char*) malloc(sizeof(char) * 6);
-	strcpy(a->svar, "_TEMP");
-
-	return a;
-}
-
-ast_node ast_create_mult_node(ast_node left, ast_node right)
-{
-	ast_node a = new_ast_node(2);
-	a->category = OPERATOR;
-	a->item = MULT;
+	a->item = item;
 	a->childs[0] = left;
 	a->childs[1] = right;
 	a->svar = (char*) malloc(sizeof(char) * 6);
@@ -273,24 +122,6 @@ ast_node ast_create_branch(ast_node left, ast_node right)
 	return a;
 }
 
-ast_node ast_create_node_from_ep(ast_node content)
-{
-	ast_node a = new_ast_node(1);
-	a->category = SINGLE_BLOCK;
-	a->childs[0] = content;
-
-	return a;
-}
-
-ast_node ast_create_node_from_cp(ast_node content)
-{
-	ast_node a = new_ast_node(1);
-	a->category = SINGLE_BLOCK;
-	a->childs[0] = content;
-
-	return a;
-}
-
 ast_node ast_create_empty_node()
 {
 	ast_node a = new_ast_node(0);
@@ -298,14 +129,6 @@ ast_node ast_create_empty_node()
 	return a;
 }
 
-ast_node ast_create_jmp_node(ast_node dst)
-{
-	ast_node a = new_ast_node(1);
-	a->category = JMP;
-	a->childs[0] = dst;
-	
-	return a;
-}
 
 void initialize_ast()
 {
@@ -396,7 +219,7 @@ void ast_execute(ast_node root)
 					output_write(after->sname, "Sk", "", "", "");
 				}
 				break;
-//////////////////////////////////////////////
+
 				case WD:
 				{
 					ast_node after = ast_create_empty_node();
@@ -432,10 +255,6 @@ void ast_execute(ast_node root)
 }
 
 //UTIL
-void create_output_file()
-{
-	output = fopen("output.c3a", "w");
-}
 
 void output_write(char* etq, char* op, char* arg1, char* arg2, char* dst)
 {
