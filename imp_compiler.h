@@ -19,7 +19,7 @@ struct s_ast_node {
 	int value;		//may be empty
 	int child_num;
 	char* svar;
-	char* sname;
+	int sname;
 	struct s_ast_node** childs;
 };
 
@@ -67,4 +67,4 @@ char* concat(char* stat1, char* stat2);
 void display_env();
 void display_ast_tree(ast_node root, int stage);
 void create_output_file();
-void output_write(char* etq, char* op, char* arg1, char* arg2, char* dst);
+void output_write(int etq, char* op, char* arg1, char* arg2, char* dst);

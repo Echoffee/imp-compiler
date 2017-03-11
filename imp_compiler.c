@@ -6,26 +6,33 @@
 variable v_root = NULL;
 ast_node a_root = NULL;
 ast_node a_current_branch = NULL;
-etq_cmd e_root = NULL;
-etq_cmd e_current = NULL;
-FILE* output = NULL;
-char* current_name = NULL;
-int current_name_n = NULL;
+int current_node_name_n = 0;
+char* prev_buff_name = NULL;
+char* current_buff_name = NULL;
+int current_buff_name_n = 0;
 
-void set_name()
+void set_node_name()
 {
-	int cn = current_name_n * 10;
-	current_name[0] = 'E'; 
-	current_name[1] = 'T';
+	current_node_name_n++;
+}
+
+char* set_var_name()
+{
+	strcpy(prev_buff_name, current_buff_name);
+	int cn = current_buff_name_n * 10;
+	current_buff_name[0] = 'V'; 
+	current_buff_name[1] = 'A';
 	int i = 0;
 	do {
 		cn = cn / 10;
 		i++;
-		current_name[1 + i] = '0' + cn % 10;
+		current_buff_name[1 + i] = '0' + cn % 10;
 	}while (cn / 10 > 0);
-	current_name[2 + i] = '\0';
+	current_buff_name[2 + i] = '\0';
 	
-	current_name_n++;
+	current_buff_name_n++;
+	
+	return current_buff_name;
 }
 
 //AST
@@ -39,9 +46,8 @@ ast_node new_ast_node(int size)
 	a->child_num = size;
 	a->childs = (ast_node*) malloc(sizeof(ast_node) * size);
 	a->svar = NULL;
-	a->sname = (char*) malloc (sizeof(char) * 8);
-	strcpy(a->sname, current_name);
-	set_name();
+	a->sname = current_node_name_n;
+	set_node_name();
 	return a;
 }
 
@@ -70,8 +76,6 @@ ast_node ast_create_o_node(ast_node left, ast_node right, node_item item)
 	a->item = item;
 	a->childs[0] = left;
 	a->childs[1] = right;
-	a->svar = (char*) malloc(sizeof(char) * 6);
-	strcpy(a->svar, "_TEMP");
 
 	return a;
 }
@@ -102,6 +106,7 @@ ast_node ast_create_ITE_node(ast_node condition, ast_node then_block, ast_node e
 
 ast_node ast_create_WD_node(ast_node condition, ast_node do_block)
 {
+	fprintf(stderr, "ast_create_WD_node\n");
 	ast_node a = new_ast_node(3);
 	a->category = LOOP;
 	a->item = WD;
@@ -139,15 +144,12 @@ void initialize_ast()
 	a_root->value = 0;
 	a_root->child_num = 1;
 	a_root->childs = (ast_node*) malloc(sizeof(ast_node));
-	current_name = (char*) malloc(sizeof(char) * 8);
-	current_name_n = 0;
-	strcpy(current_name, "ET0");
-	
+	current_node_name_n = 0;
 }
 
 void ast_execute(ast_node root)
 {
-	char* etq = NULL;
+	int etq = -1;
 	
 	switch (root->category) {
 		case ROOT:
@@ -165,7 +167,7 @@ void ast_execute(ast_node root)
 				break;
 
 				case CONST:
-					output_write(root->sname, "Afc", root->svar, "", "_TEMP");
+					output_write(root->sname, "Afc", root->svar, "", "_CONST");
 					//:^)
 				break;
 			}
@@ -177,23 +179,32 @@ void ast_execute(ast_node root)
 			switch (root->item) {
 				case ADD:
 					//root->value = root->childs[0]->value + root->childs[1]->value;
-					output_write(root->sname, "Pl", root->childs[0]->svar, "_TEMP", "_TEMP");
+					if (root->childs[1]->item = CONST)
+						output_write(-1, "Pl", root->childs[0]->svar, "_CONST", "_TEMP");
+					else
+						output_write(root->sname, "Pl", root->childs[0]->svar, "_TEMP", "_TEMP");
 				break;
 
 				case SUB:
 					//root->value = root->childs[0]->value - root->childs[1]->value;
-					output_write(root->sname, "Mo", root->childs[0]->svar, "_TEMP", "_TEMP");
+					if (root->childs[1]->item = CONST)
+						output_write(-1, "Mo", root->childs[0]->svar, "_CONST", "_TEMP");
+					else
+						output_write(root->sname, "Mo", root->childs[0]->svar, "_TEMP", "_TEMP");
 				break;
 
 				case MULT:
 					//root->value = root->childs[0]->value * root->childs[1]->value;
-					output_write(root->sname, "Mu", root->childs[0]->svar, "_TEMP", "_TEMP");
+					if (root->childs[1]->item = CONST)
+						output_write(-1, "Mu", root->childs[0]->svar, "_CONST", "_TEMP");
+					else
+						output_write(root->sname, "Mu", root->childs[0]->svar, "_TEMP", "_TEMP");
 				break;
 
 				case AFF:
 					//root->childs[0]->var->value = root->childs[1]->value;
 					if (root->childs[1]->item = CONST)
-						output_write("", "Af", root->childs[0]->svar, "_TEMP", "");
+						output_write(-1, "Af", root->childs[0]->svar, "_CONST", "");
 					else
 						output_write(root->sname, "Af", root->childs[0]->svar, "_TEMP", "");
 					
@@ -212,9 +223,9 @@ void ast_execute(ast_node root)
 						etq = root->childs[2]->sname;
 						
 					ast_node after = ast_create_empty_node();
-					output_write("", "Jz", root->childs[0]->svar, "", etq);
+					output_write(etq, "Jz", root->childs[0]->svar, "", "@");
 					ast_execute(root->childs[1]);
-					output_write("", "Jp", "", "", after->sname);
+					output_write(after->sname, "Jp", "", "", "@");
 					ast_execute(root->childs[2]);
 					output_write(after->sname, "Sk", "", "", "");
 				}
@@ -223,9 +234,9 @@ void ast_execute(ast_node root)
 				case WD:
 				{
 					ast_node after = ast_create_empty_node();
-					output_write("", "Jz", root->childs[0]->svar, "", after->sname);
+					output_write(after->sname, "Jz", root->childs[0]->svar, "", "@");
 					ast_execute(root->childs[1]);
-					output_write("", "Jp", "", "", root->sname);
+					output_write(root->sname, "Jp", "", "", "@");
 					output_write(after->sname, "Sk", "", "", "");
 				}
 				break;
@@ -243,7 +254,7 @@ void ast_execute(ast_node root)
 				etq = root->childs[0]->childs[1]->sname;
 			//	else
 			//etq = root->childs[0]->sname;
-			output_write(root->sname, "Jp", "", "", etq);
+			output_write(etq, "Jp", "", "", "@");
 			break;
 
 		case SINGLE_BLOCK:
@@ -254,11 +265,42 @@ void ast_execute(ast_node root)
 
 }
 
+ast_node ast_create_node_from_ep(ast_node content)		
+{		
+ 	ast_node a = new_ast_node(1);		
+ 	a->category = SINGLE_BLOCK;		
+ 	a->childs[0] = content;		
+	a->svar = (char*) malloc(sizeof(char) * 6);
+	strcpy(a->svar, "_TEMP");
+ 		
+ 	return a;		
+}		
+ 		
+ast_node ast_create_node_from_cp(ast_node content)		
+{		
+ 	ast_node a = new_ast_node(1);		
+ 	a->category = SINGLE_BLOCK;		
+ 	a->childs[0] = content;		
+	a->svar = (char*) malloc(sizeof(char) * 6);
+	strcpy(a->svar, "_TEMP");
+ 
+  	return a;		
+}
+
 //UTIL
 
-void output_write(char* etq, char* op, char* arg1, char* arg2, char* dst)
+void output_write(int etq, char* op, char* arg1, char* arg2, char* dst)
 {
-	fprintf(stdout, "%s\t:%s\t:%s\t:%s\t:%s\n", etq, op, arg1, arg2, dst);
+	if (etq < 0)
+		fprintf(stdout, "\t:%s\t:%s\t:%s\t:%s\n", op, arg1, arg2, dst);
+	else
+	{
+		if (strlen(dst) > 0 && dst[0] == '@')
+			fprintf(stdout, "\t:%s\t:%s\t:%s\t:ET%d\n", op, arg1, arg2, etq);
+		else
+			fprintf(stdout, "ET%d\t:%s\t:%s\t:%s\t:%s\n", etq, op, arg1, arg2, dst);
+	}
+
 }
 
 void display_env()

@@ -30,9 +30,9 @@
 
 %start STRT
 %%
-STRT	: C {display_ast_tree($1, 0); ast_execute($1); output_write("END", "St", "", "", ""); fprintf(stderr, "\n*** Done ***\n");}
+STRT	: C {display_ast_tree($1, 0);ast_execute($1); fprintf(stdout,"END	:St	:	:	:\n"); fprintf(stderr, "\n*** Done ***\n");}
 
-E		: E S_PL T {$$ = ast_create_o_node($1, $3, ADD);}
+E		: E S_PL T {$$ = ast_create_o_node($1, $3, 4);}
 		| E S_MO T {$$ = ast_create_o_node($1, $3, SUB);}
 		| T	{$$ = $1;}
 		;
@@ -46,7 +46,7 @@ F		: P_OPEN E P_CLOSE {$$ = ast_create_node_from_ep($2);}
 		| V_VAR {$$ = ast_create_node_from_variable($1);}
 		;
 
-N		: V_INT {$$ = ast_create_node_from_int($1); }
+N		: V_INT {fprintf(stderr, "vvar\n");$$ = ast_create_node_from_int($1); }
 		| S_MO V_INT {$$ = ast_create_node_from_int($2); }
 		| S_PL V_INT {$$ = ast_create_node_from_int($2); }
 		;

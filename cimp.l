@@ -5,21 +5,21 @@
 %}
 
 %%
-":=" {return S_AF;}
-"skip" {return S_SK;}
-";" {return S_SE;}
-"if" {return S_IF;}
-"then" {return S_TH;}
-"else" {return S_EL;}
-"while" {return S_WH;}
-"do" {return S_DO;}
-"+" {return S_PL;}
-"-" {return S_MO;}
-"*" {return S_MU;}
-"(" {return P_OPEN;}
-")" {return P_CLOSE;}
+":=" {fprintf(stderr, ".%s.", yytext); return S_AF;}
+"skip" {fprintf(stderr, ".%s.", yytext); return S_SK;}
+";" {fprintf(stderr, ".%s.", yytext); return S_SE;}
+"if" {fprintf(stderr, ".%s.", yytext); return S_IF;}
+"then" {fprintf(stderr, ".%s.", yytext); return S_TH;}
+"else" {fprintf(stderr, ".%s.", yytext); return S_EL;}
+"while" {fprintf(stderr, ".%s.", yytext); return S_WH;}
+"do" {fprintf(stderr, ".%s.", yytext); return S_DO;}
+"+" {fprintf(stderr, ".%s.", yytext); return S_PL;}
+"-" {fprintf(stderr, ".%s.", yytext); return S_MO;}
+"*" {fprintf(stderr, ".%s.", yytext); return S_MU;}
+"(" {fprintf(stderr, ".%s.", yytext); return P_OPEN;}
+")" {fprintf(stderr, ".%s.", yytext); return P_CLOSE;}
 [ \t\n] { }
-[1-9][0-9]* {yylval.sval = yytext; return V_INT;}
-0 {yylval.sval = yytext; return V_INT;}
-[a-zA-Z0-9\_]* {yylval.sval = strdup(yytext); return V_VAR;}
+[1-9][0-9]* {yylval.sval = yytext; fprintf(stderr, ".%s.", yytext); return V_INT;}
+0 {yylval.sval = yytext; fprintf(stderr, ".%s.", yytext); return V_INT;}
+[a-zA-Z0-9\_]* {yylval.sval = strdup(yytext); fprintf(stderr, ".%s.", yytext); return V_VAR;}
 %%
