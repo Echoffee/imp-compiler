@@ -398,16 +398,13 @@ void ast_execute(ast_node root)
 				break;
 //////////////////////////////////////////////
 				case WD:
-					root->childs[2] = ast_create_jmp_node(a_current_branch);
-					if (root->childs[2]->item == AFF)
-						etq = root->childs[2]->childs[1]->sname;
-					else
-						etq = root->childs[2]->sname;
-					
-					output_write("", "Jz", root->childs[0]->svar, "", etq);
+				{
+					ast_node after = ast_create_empty_node();
+					output_write("", "Jz", root->childs[0]->svar, "", after->sname);
 					ast_execute(root->childs[1]);
-					output_write("", "Jp", "", "", root->svar);
-					output_write(etq, "Sk", "", "", "");
+					output_write("", "Jp", "", "", root->sname);
+					output_write(after->sname, "Sk", "", "", "");
+				}
 				break;
 			}
 		break;
