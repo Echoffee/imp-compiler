@@ -169,9 +169,10 @@ ast_node new_ast_node(int size)
 	return a;
 }
 
-ast_node ast_create_node_from_int(char* value)
+ast_node ast_create_node_from_int(char* value)	//To be reviewed
 {
 	ast_node a = ast_create_node_from_variable(value);
+	fprintf(stderr, "********%s********\n", a->sname);
 	a->item = CONST;
 	return a;
 }
@@ -353,22 +354,26 @@ void ast_execute(ast_node root)
 			switch (root->item) {
 				case ADD:
 					//root->value = root->childs[0]->value + root->childs[1]->value;
-					output_write(root->sname, "Pl", root->childs[0]->svar, root->childs[1]->svar, "_TEMP");
+					output_write(root->sname, "Pl", root->childs[0]->svar, "_TEMP", "_TEMP");
 				break;
 
 				case SUB:
 					//root->value = root->childs[0]->value - root->childs[1]->value;
-					output_write(root->sname, "Mo", root->childs[0]->svar, root->childs[1]->svar, "_TEMP");
+					output_write(root->sname, "Mo", root->childs[0]->svar, "_TEMP", "_TEMP");
 				break;
 
 				case MULT:
 					//root->value = root->childs[0]->value * root->childs[1]->value;
-					output_write(root->sname, "Mu", root->childs[0]->svar, root->childs[1]->svar, "_TEMP");
+					output_write(root->sname, "Mu", root->childs[0]->svar, "_TEMP", "_TEMP");
 				break;
 
 				case AFF:
 					//root->childs[0]->var->value = root->childs[1]->value;
-					output_write(root->sname, "Af", root->childs[0]->svar, "_TEMP", "");
+					if (root->childs[1]->item = CONST)
+						output_write("", "Af", root->childs[0]->svar, "_TEMP", "");
+					else
+						output_write(root->sname, "Af", root->childs[0]->svar, "_TEMP", "");
+					
 				break;
 			}
 		break;
@@ -377,29 +382,32 @@ void ast_execute(ast_node root)
 			output_write(root->sname, "Sk", "", "", "");
 			switch (root->item) {
 				case ITE:
+				{
 					if (root->childs[2]->item == AFF)
 						etq = root->childs[2]->childs[1]->sname;
 					else
 						etq = root->childs[2]->sname;
 						
+					ast_node after = ast_create_empty_node();
 					output_write("", "Jz", root->childs[0]->svar, "", etq);
 					ast_execute(root->childs[1]);
-					root->childs[3] = ast_create_jmp_node(a_current_branch);
-					ast_execute(root->childs[3]);
+					output_write("", "Jp", "", "", after->sname);
 					ast_execute(root->childs[2]);
+					output_write(after->sname, "Sk", "", "", "");
+				}
 				break;
 //////////////////////////////////////////////
 				case WD:
-					if (root->childs[1]->item == AFF)
-						etq = root->childs[1]->childs[1]->sname;
+					root->childs[2] = ast_create_jmp_node(a_current_branch);
+					if (root->childs[2]->item == AFF)
+						etq = root->childs[2]->childs[1]->sname;
 					else
-						etq = root->childs[1]->sname;
+						etq = root->childs[2]->sname;
 					
 					output_write("", "Jz", root->childs[0]->svar, "", etq);
 					ast_execute(root->childs[1]);
-					root->childs[2] = ast_create_jmp_node(a_current_branch);
-					ast_execute(root->childs[2]);
-					output_write("", "Jp", "", "", root->sname);
+					output_write("", "Jp", "", "", root->svar);
+					output_write(etq, "Sk", "", "", "");
 				break;
 			}
 		break;
@@ -408,14 +416,13 @@ void ast_execute(ast_node root)
 			a_current_branch = root;
 			ast_execute(root->childs[0]);
 			ast_execute(root->childs[1]);
-			output_write(root->sname, "Sk", "", "", "");
 		break;
 		
 		case JMP:
-			if (root->childs[0]->item == AFF)
+			//if (root->childs[0]->item == AFF)
 				etq = root->childs[0]->childs[1]->sname;
-			else
-				etq = root->childs[0]->sname;
+			//	else
+			//etq = root->childs[0]->sname;
 			output_write(root->sname, "Jp", "", "", etq);
 			break;
 
@@ -435,20 +442,20 @@ void create_output_file()
 
 void output_write(char* etq, char* op, char* arg1, char* arg2, char* dst)
 {
-	fprintf(stderr, "%s\t:%s\t:%s\t:%s\t:%s\n", etq, op, arg1, arg2, dst);
+	fprintf(stdout, "%s\t:%s\t:%s\t:%s\t:%s\n", etq, op, arg1, arg2, dst);
 }
 
 void display_env()
 {
 	
-	printf("*** ENV ***\n");
+	fprintf(stderr, "*** ENV ***\n");
 	while(v_root != NULL)
 	{
 		printf("Var %s : %d\n", v_root->name, v_root->value);
 		v_root = v_root->next;
 	}
 
-	printf("*** END ***\n");
+	fprintf(stderr, "*** END ***\n");
 }
 
 void display_ast_tree(ast_node root, int stage)

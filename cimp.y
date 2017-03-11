@@ -30,7 +30,7 @@
 
 %start STRT
 %%
-STRT	: C {display_ast_tree($1, 0); ast_execute($1); output_write("END", "St", "", "", ""); printf("\n*** Done ***\n");}
+STRT	: C {display_ast_tree($1, 0); ast_execute($1); output_write("END", "St", "", "", ""); fprintf(stderr, "\n*** Done ***\n");}
 
 E		: E S_PL T {$$ = ast_create_add_node($1, $3);}
 		| E S_MO T {$$ = ast_create_sub_node($1, $3);}
@@ -70,6 +70,6 @@ int main()
 {
 	initialize_ast();
     yyparse();
-	display_env();
+	//display_env();
     return 0;
 }

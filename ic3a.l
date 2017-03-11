@@ -17,7 +17,7 @@
 "St" {fprintf(stderr, ".%s.", yytext);return S_ST;}
 "+" {fprintf(stderr, ".%s.", yytext);return O_POS;}
 "-" {fprintf(stderr, ".%s.", yytext);return O_NEG;}
-[\n] {fprintf(stderr, ".%s.", yytext);return S_EOL;}
+"\n" {fprintf(stderr, "\\n\n");return S_EOL;}
 [ \t] { }
 [1-9][0-9]* {yylval.ival = atoi(yytext); fprintf(stderr, ".%s.", yytext);return V_INT;}
 0 {yylval.ival = 0; fprintf(stderr, ".%s.", yytext);return V_INT;}
