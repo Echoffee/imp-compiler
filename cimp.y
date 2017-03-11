@@ -32,7 +32,7 @@
 %%
 STRT	: C {display_ast_tree($1, 0);ast_execute($1); fprintf(stdout,"END	:St	:	:	:\n"); fprintf(stderr, "\n*** Done ***\n");}
 
-E		: E S_PL T {$$ = ast_create_o_node($1, $3, 4);}
+E		: E S_PL T {$$ = ast_create_o_node($1, $3, ADD);}
 		| E S_MO T {$$ = ast_create_o_node($1, $3, SUB);}
 		| T	{$$ = $1;}
 		;

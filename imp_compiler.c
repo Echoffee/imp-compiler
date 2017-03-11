@@ -9,7 +9,7 @@ ast_node a_current_branch = NULL;
 int current_node_name_n = 0;
 char* prev_buff_name = NULL;
 char* current_buff_name = NULL;
-int current_buff_name_n = 0;
+int current_var_name_n = 0;
 
 void set_node_name()
 {
@@ -18,21 +18,7 @@ void set_node_name()
 
 char* set_var_name()
 {
-	strcpy(prev_buff_name, current_buff_name);
-	int cn = current_buff_name_n * 10;
-	current_buff_name[0] = 'V'; 
-	current_buff_name[1] = 'A';
-	int i = 0;
-	do {
-		cn = cn / 10;
-		i++;
-		current_buff_name[1 + i] = '0' + cn % 10;
-	}while (cn / 10 > 0);
-	current_buff_name[2 + i] = '\0';
-	
-	current_buff_name_n++;
-	
-	return current_buff_name;
+	current_var_name_n++;
 }
 
 //AST
@@ -53,8 +39,12 @@ ast_node new_ast_node(int size)
 
 ast_node ast_create_node_from_int(char* value)	//To be reviewed
 {
-	ast_node a = ast_create_node_from_variable(value);
+	char n[5];
+	sprintf(n, "V%d", current_var_name_n);
+	ast_node a = ast_create_node_from_variable(n);
+	a->value = atoi(value);
 	a->item = CONST;
+	set_var_name();	
 	return a;
 }
 
@@ -106,7 +96,6 @@ ast_node ast_create_ITE_node(ast_node condition, ast_node then_block, ast_node e
 
 ast_node ast_create_WD_node(ast_node condition, ast_node do_block)
 {
-	fprintf(stderr, "ast_create_WD_node\n");
 	ast_node a = new_ast_node(3);
 	a->category = LOOP;
 	a->item = WD;
@@ -150,6 +139,7 @@ void initialize_ast()
 void ast_execute(ast_node root)
 {
 	int etq = -1;
+	char n[8];
 	
 	switch (root->category) {
 		case ROOT:
@@ -167,49 +157,58 @@ void ast_execute(ast_node root)
 				break;
 
 				case CONST:
-					output_write(root->sname, "Afc", root->svar, "", "_CONST");
+				sprintf(n, "%d", root->value);
+					output_write(root->sname, "Afc", n, "", root->svar);
 					//:^)
 				break;
 			}
 		break;
 
 		case OPERATOR:
+		{
+			
 			ast_execute(root->childs[1]);
 			ast_execute(root->childs[0]);
+			root->svar = (char*) malloc(sizeof(char) * 5);
+			sprintf(root->svar, "V%d", current_var_name_n);
+			set_var_name();
 			switch (root->item) {
 				case ADD:
 					//root->value = root->childs[0]->value + root->childs[1]->value;
 					if (root->childs[1]->item = CONST)
-						output_write(-1, "Pl", root->childs[0]->svar, "_CONST", "_TEMP");
+						output_write(-1, "Pl", root->childs[0]->svar, root->childs[1]->svar, root->svar);
 					else
-						output_write(root->sname, "Pl", root->childs[0]->svar, "_TEMP", "_TEMP");
+						output_write(root->sname, "Pl", root->childs[0]->svar, root->childs[1]->svar, root->svar);
 				break;
 
 				case SUB:
 					//root->value = root->childs[0]->value - root->childs[1]->value;
 					if (root->childs[1]->item = CONST)
-						output_write(-1, "Mo", root->childs[0]->svar, "_CONST", "_TEMP");
+						output_write(-1, "Mo", root->childs[0]->svar, root->childs[1]->svar, root->svar);
 					else
-						output_write(root->sname, "Mo", root->childs[0]->svar, "_TEMP", "_TEMP");
+						output_write(root->sname, "Mo", root->childs[0]->svar, root->childs[1]->svar, root->svar);
 				break;
 
 				case MULT:
 					//root->value = root->childs[0]->value * root->childs[1]->value;
 					if (root->childs[1]->item = CONST)
-						output_write(-1, "Mu", root->childs[0]->svar, "_CONST", "_TEMP");
+						output_write(-1, "Mu", root->childs[0]->svar, root->childs[1]->svar, root->svar);
 					else
-						output_write(root->sname, "Mu", root->childs[0]->svar, "_TEMP", "_TEMP");
+						output_write(root->sname, "Mu", root->childs[0]->svar, root->childs[1]->svar, root->svar);
 				break;
 
 				case AFF:
 					//root->childs[0]->var->value = root->childs[1]->value;
 					if (root->childs[1]->item = CONST)
-						output_write(-1, "Af", root->childs[0]->svar, "_CONST", "");
+						output_write(-1, "Af", root->childs[0]->svar, root->childs[1]->svar, "");
 					else
-						output_write(root->sname, "Af", root->childs[0]->svar, "_TEMP", "");
+						output_write(root->sname, "Af", root->childs[0]->svar, root->childs[1]->svar, "");
 					
 				break;
 			}
+			
+		}
+			
 		break;
 
 		case LOOP:
@@ -260,6 +259,7 @@ void ast_execute(ast_node root)
 		case SINGLE_BLOCK:
 			ast_execute(root->childs[0]);
 			root->value = root->childs[0]->value;
+			root->svar = root->childs[0]->svar;
 		break;
 	}
 
@@ -270,8 +270,6 @@ ast_node ast_create_node_from_ep(ast_node content)
  	ast_node a = new_ast_node(1);		
  	a->category = SINGLE_BLOCK;		
  	a->childs[0] = content;		
-	a->svar = (char*) malloc(sizeof(char) * 6);
-	strcpy(a->svar, "_TEMP");
  		
  	return a;		
 }		
@@ -281,8 +279,6 @@ ast_node ast_create_node_from_cp(ast_node content)
  	ast_node a = new_ast_node(1);		
  	a->category = SINGLE_BLOCK;		
  	a->childs[0] = content;		
-	a->svar = (char*) malloc(sizeof(char) * 6);
-	strcpy(a->svar, "_TEMP");
  
   	return a;		
 }
