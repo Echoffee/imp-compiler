@@ -19,6 +19,7 @@ struct s_ast_node {
 	int value;		//may be empty
 	int child_num;
 	char* svar;
+	struct s_ast_node* parent;
 	struct s_ast_node** childs;
 };
 

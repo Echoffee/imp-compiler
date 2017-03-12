@@ -165,7 +165,7 @@ ast_node ast_create_op_node(int factor, ast_node value)
 	a->item = FACT;
 	a->value = factor;
 	a->childs[0] = value;
-
+	value->parent = a;
 	return a;
 }
 
@@ -176,6 +176,8 @@ ast_node ast_create_add_node(ast_node left, ast_node right, char* dest)
 	a->item = ADD;
 	a->childs[0] = left;
 	a->childs[1] = right;
+	left->parent = a;
+	right->parent = a;
 	a->var = get_variable(dest);
 
 	return a;
@@ -188,6 +190,8 @@ ast_node ast_create_sub_node(ast_node left, ast_node right, char* dest)
 	a->item = SUB;
 	a->childs[0] = left;
 	a->childs[1] = right;
+	left->parent = a;
+	right->parent = a;
 	a->var = get_variable(dest);
 
 	return a;
@@ -200,6 +204,8 @@ ast_node ast_create_mult_node(ast_node left, ast_node right, char* dest)
 	a->item = MULT;
 	a->childs[0] = left;
 	a->childs[1] = right;
+	left->parent = a;
+	right->parent = a;
 	a->var = get_variable(dest);
 
 	return a;
@@ -212,7 +218,8 @@ ast_node ast_create_aff_node(char* name, ast_node value)
 	a->item = AFF;
 	a->childs[0] = ast_create_node_from_variable(name);
 	a->childs[1] = value;
-
+	a->childs[0]->parent = a;
+	a->childs[1]->parent = a;
 	return a;
 }
 
@@ -223,6 +230,8 @@ ast_node ast_create_branch(ast_node left, ast_node right)
 	a->item = NONE;
 	a->childs[0] = left;
 	a->childs[1] = right;
+	left->parent = a;
+	right->parent = a;
 	if (left->childs[0]->category == EMPTY)
 	{
 		left->childs[0]->childs[0] = a;
@@ -236,6 +245,7 @@ ast_node ast_create_label_cmd(char* label, ast_node command)
 	a->category = LABEL;
 	a->item = NONE;
 	a->childs[0] = command;
+	command->parent = a;
 	add_etq_cmd(label, command);
 
 	return a;
@@ -323,6 +333,8 @@ void ast_execute(ast_node root)
 		case MEMBER:
 			switch (root->item) {
 				case VAR:
+				fprintf(stderr, "%s\n", root->var->name);
+				fprintf(stderr, "%d\n", root->var->value);
 					root->value = root->var->value;
 				break;
 
@@ -331,7 +343,9 @@ void ast_execute(ast_node root)
 				break;
 				
 				case ETQ:
+				fprintf(stderr, "GOTO %s\n", root->svar);
 					root->childs[0] = get_node_from_etq_cmd(root->svar);
+					return;
 				break;
 			}
 		break;
@@ -364,14 +378,14 @@ void ast_execute(ast_node root)
 		
 		case JMP:
 			ast_execute(root->childs[0]);
-			ast_execute(root->childs[0]->childs[0]);
+			ast_execute(root->childs[0]->childs[0]->parent->parent);
 		break;
 
 		case JMPC:
 			ast_execute(root->childs[0]);
 			ast_execute(root->childs[1]);
 			if (!root->childs[0]->value)
-				ast_execute(root->childs[1]->childs[0]);
+				ast_execute(root->childs[1]->childs[0]->parent->parent);
 		break;
 		
 		case STOP:
@@ -388,7 +402,9 @@ void ast_execute(ast_node root)
 			root->value = root->childs[0]->value;
 		break;
 	}
-
+	
+	if (root->parent != NULL && root->parent->category == BRANCH && root->childs[0] == root)
+		ast_execute(root->parent->childs[1]);
 }
 
 //UTIL
