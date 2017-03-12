@@ -5,10 +5,10 @@ struct s_variable {
 };
 
 typedef struct s_variable* variable;
-
+//					0		1      2       3        4     5          6
 enum e_node_type { EMPTY, ROOT, MEMBER, OPERATOR, LOOP, BRANCH, SINGLE_BLOCK };
 enum e_node_item { NONE, CONST, VAR, AFF, ADD, SUB, MULT, ITE, WD};
-
+//                  0       1     2   3   4     5    6     7    8 
 typedef enum e_node_type node_type;
 typedef enum e_node_item node_item;
 

@@ -24,6 +24,7 @@
 %type<node> F
 %type<node> N
 %type<node> C
+%type<node> CC
 
 %type<ival> V_INT
 %type<sval> V_VAR
@@ -55,9 +56,15 @@ C		: C S_SE C {$$ = ast_create_branch($1, $3);}
 		| S_SK { $$ = ast_create_empty_node();}
 		| V_VAR S_AF E {$$ = ast_create_aff_node($1, $3);}
 		| P_OPEN C P_CLOSE {$$ = ast_create_node_from_cp($2);}
-		| S_IF E S_TH C S_EL C {$$ = ast_create_ITE_node($2, $4, $6);}
-		| S_WH E S_DO C {$$ = ast_create_WD_node($2, $4);}
+		| S_IF E S_TH CC S_EL CC {$$ = ast_create_ITE_node($2, $4, $6);}
+		| S_WH E S_DO CC {$$ = ast_create_WD_node($2, $4);}
 		;
+		
+CC		: S_SK { $$ = ast_create_empty_node();}
+		| V_VAR S_AF E {$$ = ast_create_aff_node($1, $3);}
+		| P_OPEN C P_CLOSE {$$ = ast_create_node_from_cp($2);}
+		| S_IF E S_TH CC S_EL CC {$$ = ast_create_ITE_node($2, $4, $6);}
+		| S_WH E S_DO CC {$$ = ast_create_WD_node($2, $4);}
 %%
 
 int yyerror(char *s)
