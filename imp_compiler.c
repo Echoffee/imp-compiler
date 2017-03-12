@@ -37,12 +37,12 @@ ast_node new_ast_node(int size)
 	return a;
 }
 
-ast_node ast_create_node_from_int(char* value)
+ast_node ast_create_node_from_int(int value)
 {
 	char n[5];
 	sprintf(n, "V%d", current_var_name_n);
 	ast_node a = ast_create_node_from_variable(n);
-	a->value = atoi(value);
+	a->value = value;
 	a->item = CONST;
 	set_var_name();	
 	return a;

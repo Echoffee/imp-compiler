@@ -333,8 +333,6 @@ void ast_execute(ast_node root)
 		case MEMBER:
 			switch (root->item) {
 				case VAR:
-				fprintf(stderr, "%s\n", root->var->name);
-				fprintf(stderr, "%d\n", root->var->value);
 					root->value = root->var->value;
 				break;
 
@@ -343,10 +341,14 @@ void ast_execute(ast_node root)
 				break;
 				
 				case ETQ:
-				fprintf(stderr, "GOTO %s\n", root->svar);
 					root->childs[0] = get_node_from_etq_cmd(root->svar);
 					return;
 				break;
+				
+				case FACT:
+					ast_execute(root->childs[0]);
+					root->value = root->value * root->childs[0]->value;
+					break;
 			}
 		break;
 

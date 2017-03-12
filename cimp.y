@@ -23,10 +23,11 @@
 %type<node> T
 %type<node> F
 %type<node> N
+%type<ival> V
 %type<node> C
 %type<node> CC
 
-%type<sval> V_INT
+%type<ival> V_INT
 %type<sval> V_VAR
 
 %start STRT
@@ -47,9 +48,12 @@ F		: P_OPEN E P_CLOSE {$$ = ast_create_node_from_ep($2);}
 		| V_VAR {$$ = ast_create_node_from_variable($1);}
 		;
 
-N		: V_INT {$$ = ast_create_node_from_int($1); }
-		| S_MO V_INT {$$ = ast_create_node_from_int($2); }
-		| S_PL V_INT {$$ = ast_create_node_from_int($2); }
+N		: V {$$ = ast_create_node_from_int($1); }
+		;
+		
+V		: S_MO V {$$ = -1 * $2; }
+		| S_PL V {$$ = $2; }
+		| V_INT {$$ = $1; }
 		;
 		
 C		: C S_SE C {$$ = ast_create_branch($1, $3);}

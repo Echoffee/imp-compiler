@@ -45,7 +45,7 @@ typedef struct s_etq_cmd* etq_cmd;
 */
 
 ast_node new_ast_node(int size);
-ast_node ast_create_node_from_int(char* value);
+ast_node ast_create_node_from_int(int value);
 ast_node ast_create_node_from_variable(char* name);
 ast_node ast_create_o_node(ast_node left, ast_node right, node_item item);
 ast_node ast_create_aff_node(char* name, ast_node value);
