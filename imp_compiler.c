@@ -5,10 +5,7 @@
 
 variable v_root = NULL;
 ast_node a_root = NULL;
-ast_node a_current_branch = NULL;
 int current_node_name_n = 0;
-char* prev_buff_name = NULL;
-char* current_buff_name = NULL;
 int current_var_name_n = 0;
 
 void set_node_name()
@@ -16,7 +13,7 @@ void set_node_name()
 	current_node_name_n++;
 }
 
-char* set_var_name()
+void set_var_name()
 {
 	current_var_name_n++;
 }
@@ -246,18 +243,14 @@ void ast_execute(ast_node root)
 		break;
 
 		case BRANCH:
-			a_current_branch = root;
 			ast_execute(root->childs[0]);
 			ast_execute(root->childs[1]);
 		break;
 		
 		case JMP:
-			//if (root->childs[0]->item == AFF)
-				etq = root->childs[0]->childs[1]->sname;
-			//	else
-			//etq = root->childs[0]->sname;
+			etq = root->childs[0]->childs[1]->sname;
 			output_write(etq, "Jp", "", "", "@");
-			break;
+		break;
 
 		case SINGLE_BLOCK:
 			ast_execute(root->childs[0]);
@@ -331,5 +324,5 @@ void display_ast_tree(ast_node root, int stage)
 	for (int i = 0; i < stage; i++)
 		fprintf(stderr, "|");
 
-	fprintf(stderr, "__________________\n");
+	fprintf(stderr, "L_________________\n");
 }

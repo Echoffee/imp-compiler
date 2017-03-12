@@ -48,16 +48,16 @@ V		: V_INT { $$ = ast_create_node_from_int($1);}
 		| O_NEG V { $$ = ast_create_op_node(-1, $2); }
 		;
 
-CMD		: S_PL S_SE V S_SE V S_SE V_VAR { $$ = ast_create_add_node($3, $5, $7); }
-		| S_MO S_SE V S_SE V S_SE V_VAR { $$ = ast_create_sub_node($3, $5, $7); }
-		| S_MU S_SE V S_SE V S_SE V_VAR { $$ = ast_create_mult_node($3, $5, $7); }
+CMD		: S_PL S_SE V S_SE V S_SE V_VAR { $$ = ast_create_o_node($3, $5, $7, ADD); }
+		| S_MO S_SE V S_SE V S_SE V_VAR { $$ = ast_create_o_node($3, $5, $7, SUB); }
+		| S_MU S_SE V S_SE V S_SE V_VAR { $$ = ast_create_o_node($3, $5, $7, MULT); }
 		| S_AF S_SE V_VAR S_SE V S_SE { $$ = ast_create_aff_node($3, $5); }
 		| S_AFC S_SE V S_SE S_SE V_VAR { $$ = ast_create_aff_node($6, $3); }
 		| S_SK S_SE S_SE S_SE { $$ = ast_create_empty_node(); }
 		| S_SK S_SE S_SE S_SE V_VAR{ $$ = ast_create_empty_node(); }
 		| S_JP S_SE S_SE S_SE ETQ { $$ = ast_create_jmp_node($5); }
 		| S_JZ S_SE V S_SE S_SE ETQ { $$ = ast_create_cond_jmp_node($3, $6); }
-		| S_ST S_SE S_SE S_SE { fprintf(stderr, "stop"); $$ = ast_create_stop_node(); }
+		| S_ST S_SE S_SE S_SE { $$ = ast_create_stop_node(); }
 		;
 
 %%

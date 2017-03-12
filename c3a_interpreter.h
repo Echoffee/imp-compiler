@@ -47,9 +47,7 @@ ast_node new_ast_node(int size);
 ast_node ast_create_node_from_int(int value);
 ast_node ast_create_node_from_variable(char* name);
 ast_node ast_create_op_node(int factor, ast_node value);
-ast_node ast_create_add_node(ast_node left, ast_node right, char* dest);
-ast_node ast_create_sub_node(ast_node left, ast_node right, char* dest);
-ast_node ast_create_mult_node(ast_node left, ast_node right, char* dest);
+ast_node ast_create_o_node(ast_node left, ast_node right, char* dest, node_item item);
 ast_node ast_create_aff_node(char* name, ast_node value);
 ast_node ast_create_branch(ast_node left, ast_node right);
 ast_node ast_create_label_cmd(char* label, ast_node command);
@@ -61,10 +59,7 @@ ast_node ast_create_goto_node(char* etq);
 void initialize_ast();
 void ast_execute(ast_node root);
 
-
 variable add_variable(char* name, int value);
-int get_value_from_variable(char* label);
 void assign_value_to_variable(char* label, int value);
-char* concat(char* stat1, char* stat2);
 void display_env();
 void display_ast_tree(ast_node root, int stage);

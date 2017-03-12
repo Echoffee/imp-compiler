@@ -69,6 +69,7 @@ CC		: S_SK { $$ = ast_create_empty_node();}
 		| P_OPEN C P_CLOSE {$$ = ast_create_node_from_cp($2);}
 		| S_IF E S_TH CC S_EL CC {$$ = ast_create_ITE_node($2, $4, $6);}
 		| S_WH E S_DO CC {$$ = ast_create_WD_node($2, $4);}
+		;
 %%
 
 int yyerror(char *s)

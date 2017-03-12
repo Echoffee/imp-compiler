@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "c3a_interpreter.h"
+#include "c3a_compiler.h"
 
 variable v_root = NULL;
 variable v_current = NULL;
 etq_cmd e_root = NULL;
 etq_cmd e_current = NULL;
 ast_node a_root = NULL;
+ast_node a_current_skip = NULL;
 int global_stop = 0;
 //PRE_AST
 variable add_variable(char* name, int value)
@@ -38,6 +39,18 @@ variable get_variable(char* name)
 		return add_variable(name, 0);
 
 	return c;
+}
+
+int get_value_from_variable(char* label)
+{
+	variable c = v_root;
+	while (c != NULL && strcmp(c->name, label))
+		c = c->next;
+
+	if (c != NULL)
+		return c->value;
+	else
+		return 0;
 }
 
 void assign_value_to_variable(char* label, int value)
@@ -156,11 +169,39 @@ ast_node ast_create_op_node(int factor, ast_node value)
 	return a;
 }
 
-ast_node ast_create_o_node(ast_node left, ast_node right, char* dest, node_item item)
+ast_node ast_create_add_node(ast_node left, ast_node right, char* dest)
 {
 	ast_node a = new_ast_node(2);
 	a->category = OPERATOR;
-	a->item = item;
+	a->item = ADD;
+	a->childs[0] = left;
+	a->childs[1] = right;
+	left->parent = a;
+	right->parent = a;
+	a->var = get_variable(dest);
+
+	return a;
+}
+
+ast_node ast_create_sub_node(ast_node left, ast_node right, char* dest)
+{
+	ast_node a = new_ast_node(2);
+	a->category = OPERATOR;
+	a->item = SUB;
+	a->childs[0] = left;
+	a->childs[1] = right;
+	left->parent = a;
+	right->parent = a;
+	a->var = get_variable(dest);
+
+	return a;
+}
+
+ast_node ast_create_mult_node(ast_node left, ast_node right, char* dest)
+{
+	ast_node a = new_ast_node(2);
+	a->category = OPERATOR;
+	a->item = MULT;
 	a->childs[0] = left;
 	a->childs[1] = right;
 	left->parent = a;
@@ -215,6 +256,7 @@ ast_node ast_create_empty_node()
 	ast_node a = new_ast_node(1);
 	a->category = EMPTY;
 	a->childs[0] = NULL;
+	a_current_skip = a;
 	return a;
 }
 
@@ -398,5 +440,5 @@ void display_ast_tree(ast_node root, int stage)
 	for (int i = 0; i < stage; i++)
 		fprintf(stderr, "|");
 
-	fprintf(stderr, "L_________________\n");
+	fprintf(stderr, "__________________\n");
 }

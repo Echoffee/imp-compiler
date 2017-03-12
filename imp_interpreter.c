@@ -117,33 +117,11 @@ ast_node ast_create_node_from_variable(char* name)
 	return a;
 }
 
-ast_node ast_create_add_node(ast_node left, ast_node right)
+ast_node ast_create_o_node(ast_node left, ast_node right, node_item item)
 {
 	ast_node a = new_ast_node(2);
 	a->category = OPERATOR;
-	a->item = ADD;
-	a->childs[0] = left;
-	a->childs[1] = right;
-
-	return a;
-}
-
-ast_node ast_create_sub_node(ast_node left, ast_node right)
-{
-	ast_node a = new_ast_node(2);
-	a->category = OPERATOR;
-	a->item = SUB;
-	a->childs[0] = left;
-	a->childs[1] = right;
-
-	return a;
-}
-
-ast_node ast_create_mult_node(ast_node left, ast_node right)
-{
-	ast_node a = new_ast_node(2);
-	a->category = OPERATOR;
-	a->item = MULT;
+	a->item = item;
 	a->childs[0] = left;
 	a->childs[1] = right;
 
@@ -194,16 +172,7 @@ ast_node ast_create_branch(ast_node left, ast_node right)
 	return a;
 }
 
-ast_node ast_create_node_from_ep(ast_node content)
-{
-	ast_node a = new_ast_node(1);
-	a->category = SINGLE_BLOCK;
-	a->childs[0] = content;
-
-	return a;
-}
-
-ast_node ast_create_node_from_cp(ast_node content)
+ast_node ast_create_node_from_p(ast_node content)
 {
 	ast_node a = new_ast_node(1);
 	a->category = SINGLE_BLOCK;
