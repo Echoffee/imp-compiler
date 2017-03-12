@@ -37,7 +37,7 @@ ast_node new_ast_node(int size)
 	return a;
 }
 
-ast_node ast_create_node_from_int(char* value)	//To be reviewed
+ast_node ast_create_node_from_int(char* value)
 {
 	char n[5];
 	sprintf(n, "V%d", current_var_name_n);
@@ -216,15 +216,17 @@ void ast_execute(ast_node root)
 			switch (root->item) {
 				case ITE:
 				{
+					ast_execute(root->childs[0]);
 					if (root->childs[2]->item == AFF)
 						etq = root->childs[2]->childs[1]->sname;
 					else
 						etq = root->childs[2]->sname;
-						
+					
 					ast_node after = ast_create_empty_node();
 					output_write(etq, "Jz", root->childs[0]->svar, "", "@");
 					ast_execute(root->childs[1]);
 					output_write(after->sname, "Jp", "", "", "@");
+					output_write(etq, "Sk", "", "", "");
 					ast_execute(root->childs[2]);
 					output_write(after->sname, "Sk", "", "", "");
 				}
@@ -232,6 +234,7 @@ void ast_execute(ast_node root)
 
 				case WD:
 				{
+					ast_execute(root->childs[0]);
 					ast_node after = ast_create_empty_node();
 					output_write(after->sname, "Jz", root->childs[0]->svar, "", "@");
 					ast_execute(root->childs[1]);
@@ -288,13 +291,13 @@ ast_node ast_create_node_from_cp(ast_node content)
 void output_write(int etq, char* op, char* arg1, char* arg2, char* dst)
 {
 	if (etq < 0)
-		fprintf(stdout, "\t:%s\t:%s\t:%s\t:%s\n", op, arg1, arg2, dst);
+		fprintf(stdout, "\t:%s\t\t:%s\t\t:%s\t\t:%s\n", op, arg1, arg2, dst);
 	else
 	{
 		if (strlen(dst) > 0 && dst[0] == '@')
-			fprintf(stdout, "\t:%s\t:%s\t:%s\t:ET%d\n", op, arg1, arg2, etq);
+			fprintf(stdout, "\t:%s\t\t:%s\t\t:%s\t\t:ET%d\n", op, arg1, arg2, etq);
 		else
-			fprintf(stdout, "ET%d\t:%s\t:%s\t:%s\t:%s\n", etq, op, arg1, arg2, dst);
+			fprintf(stdout, "ET%d\t:%s\t\t:%s\t\t:%s\t\t:%s\n", etq, op, arg1, arg2, dst);
 	}
 
 }
