@@ -204,6 +204,8 @@ ast_node ast_create_label_cmd(char* label, ast_node command)
 	a->category = LABEL;
 	a->item = NONE;
 	a->childs[0] = command;
+	a->sname = (char*) malloc(sizeof(char) * strlen(label));
+	strcpy(a->sname, label);
 	command->parent = a;
 	add_etq_cmd(label, command);
 
@@ -368,6 +370,19 @@ void ast_execute(ast_node root)
 }
 
 //UTIL
+void output_write(int etq, char* op, char* arg1, char* arg2, char* dst)
+{
+	if (etq < 0)
+		fprintf(stdout, "\t:%s\t\t:%s\t\t:%s\t\t:%s\n", op, arg1, arg2, dst);
+	else
+	{
+		if (strlen(dst) > 0 && dst[0] == '@')
+			fprintf(stdout, "\t:%s\t\t:%s\t\t:%s\t\t:ET%d\n", op, arg1, arg2, etq);
+		else
+			fprintf(stdout, "ET%d\t:%s\t\t:%s\t\t:%s\t\t:%s\n", etq, op, arg1, arg2, dst);
+	}
+
+}
 void display_env()
 {
 	printf("*** ENV ***\n");
