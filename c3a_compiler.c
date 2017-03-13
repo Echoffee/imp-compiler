@@ -197,9 +197,9 @@ void c3a_execute()
 			case AF:
 			{
 				char v1[16];
-				sprintf(v1, "%d(%%edx)", get_var_pos(c_root->arg1));
+				sprintf(v1, "%d(%%edx)", get_var_pos(c_root->arg2));
 				char v2[16];
-				sprintf(v2, "%d(%%edx)", get_var_pos(c_root->arg2));
+				sprintf(v2, "%d(%%edx)", get_var_pos(c_root->arg1));
 				output_write(c_root->etq, "mrmovl", v1, "%%eax");
 				output_write("", "rmmovl", "%%eax", v2);
 				
@@ -207,8 +207,12 @@ void c3a_execute()
 			break;
 			
 			case AFC:
-				output_write(c_root->etq, "irmovl", "4(%%edx)", "%%eax");
-				output_write("", "rmmovl", "%%eax", "8(%%edx)");
+			{
+				char v1[16];
+				sprintf(v1, "%d(%%edx)", get_var_pos(c_root->dst));
+				output_write(c_root->etq, "irmovl", c_root->arg1, "%%eax");
+				output_write("", "rmmovl", "%%eax", v1);
+			}
 			break;
 			
 			case SK:

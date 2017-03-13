@@ -26,7 +26,7 @@
 
 %start STRT
 %%
-STRT	: C {init_output(); c3a_execute(); end_output(); fprintf(stderr, "\n*** Done ***\n");}
+STRT	: C {/*init_output(); */c3a_execute();/* end_output(); */fprintf(stderr, "\n*** Done ***\n");}
 
 C		: C S_EOL C { }
 		| L { }
@@ -46,7 +46,7 @@ CMD		: S_PL S_SE V S_SE V S_SE V_VAR { $$ = c3a_arg_set("PL", $3, $5, $7); }
 		| S_MO S_SE V S_SE V S_SE V_VAR { $$ = c3a_arg_set("MO", $3, $5, $7); }
 		| S_MU S_SE V S_SE V S_SE V_VAR { $$ = c3a_arg_set("MU", $3, $5, $7); }
 		| S_AF S_SE V_VAR S_SE V S_SE { $$ = c3a_arg_set("AF", $3, $5, ""); }
-		| S_AFC S_SE V S_SE S_SE V_VAR { $$ = c3a_arg_set("AFC", $6, $3, ""); }
+		| S_AFC S_SE V S_SE S_SE V_VAR { $$ = c3a_arg_set("AFC", $3, "", $6); }
 		| S_SK S_SE S_SE S_SE { $$ = c3a_arg_set("SK", "", "", ""); }
 		| S_SK S_SE S_SE S_SE V_VAR{ $$ = c3a_arg_set("SK", "", "", ""); }
 		| S_JP S_SE S_SE S_SE V_VAR { $$ = c3a_arg_set("JP", $5, "", ""); }
