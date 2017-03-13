@@ -19,7 +19,7 @@
 "-" {fprintf(stderr, ".%s.", yytext);return O_NEG;}
 "\n" {fprintf(stderr, "\\n\n");return S_EOL;}
 [ \t] { }
-[1-9][0-9]* {yylval.ival = atoi(yytext); fprintf(stderr, ".%s.", yytext);return V_INT;}
+[1-9][0-9]* {yylval.sval = strdup(yytext); fprintf(stderr, ".%s.", yytext);return V_INT;}
 0 {yylval.ival = 0; fprintf(stderr, ".%s.", yytext);return V_INT;}
 [a-zA-Z\_][a-zA-Z0-9\_]* {yylval.sval = strdup(yytext); fprintf(stderr, ".%s.", yytext);return V_VAR;}
 %%
