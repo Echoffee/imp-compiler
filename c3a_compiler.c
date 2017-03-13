@@ -202,7 +202,23 @@ void c3a_execute()
 			break;
 			
 			case MU:
-			
+			{
+				char v1[16];
+				sprintf(v1, "%d(%%edx)", get_var_pos(c_root->arg1));
+				char v2[16];
+				sprintf(v2, "%d(%%edx)", get_var_pos(c_root->arg2));
+				char v3[16];
+				sprintf(v3, "%d(%%edx)", get_var_pos(c_root->dst));
+				output_write(c_root->etq, "mrmovl", v1, "%%eax");
+				output_write("", "mrmovl", v2, "%%ebx");
+				output_write("", "pushl", "%%eax", "");
+				output_write("", "pushl", "%%ebx", "");
+				output_write("", "call", "MUL", "");
+				output_write("", "popl", "%%eax", "");
+				output_write("", "popl", "%%ebx", "");
+				output_write("", "mrmovl", "0(%%edx)", "%%eax");
+				output_write("", "rmmovl", "%%eax", "4(%%edx)");
+			}
 			break;
 			
 			case AF:
