@@ -13,7 +13,7 @@ Deadline : **Wednesday, March 15th at 11:59pm**
 - ~~**IMP language interpreter**~~ **10/10** passed tests 
 - ~~**C3A language interpreter**~~ **10/10** passed tests 
 - ~~**IMP -> C3A compiler**~~ **10/10** passed tests 
-- **C3A -> Y86 compiler**
+- ~~**C3A -> Y86 compiler**~~ **10/10** passed tests
 
 ## Help and references
 
