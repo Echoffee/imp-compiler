@@ -36,4 +36,5 @@ void c3a_add_etq_cmd(char* etq, char** args);
 void c3a_add_cmd(char** args);
 char** c3a_arg_set(char* cmd, char* arg1, char* arg2, char* dst);
 char* invert_value(char* value);
+void output_write(char* etq, char* op, char* arg1, char* arg2);
 void display_env();
