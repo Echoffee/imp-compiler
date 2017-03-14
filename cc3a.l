@@ -17,7 +17,7 @@
 "St" {return S_ST;}
 "+" {return O_POS;}
 "-" {return O_NEG;}
-"\n" {return S_EOL;}
+[\n\r] {return S_EOL;}
 [ \t] { }
 [1-9][0-9]* {yylval.sval = strdup(yytext); return V_INT;}
 0 {yylval.ival = 0; return V_INT;}
