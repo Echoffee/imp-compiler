@@ -26,8 +26,9 @@
 
 %start STRT
 %%
-STRT	: C {/*init_output(); */c3a_execute();/* end_output(); */fprintf(stderr, "\n*** Done ***\n");}
-
+STRT	: C {init_output(); c3a_execute(); end_output(); fprintf(stderr, "\n*** Done ***\n");}
+		| C S_EOL {init_output(); c3a_execute(); end_output(); fprintf(stderr, "\n*** Done ***\n");}
+		;
 C		: C S_EOL C { }
 		| L { }
 		;
