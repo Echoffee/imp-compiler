@@ -205,8 +205,8 @@ void c3a_execute()
 				sprintf(v2, "%d(%%edx)", get_var_pos(c_root->arg2));
 				char v3[16];
 				sprintf(v3, "%d(%%edx)", get_var_pos(c_root->dst));
-				output_write(c_root->etq, "mrmovl", v2, "%ebx");
-				output_write("", "mrmovl", v1, "%eax");
+				output_write(c_root->etq, "mrmovl", v1, "%ebx");
+				output_write("", "mrmovl", v2, "%eax");
 				output_write("", "subl", "%eax", "%ebx");
 				output_write("", "rmmovl", "%ebx", v3);
 			}

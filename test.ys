@@ -1,0 +1,134 @@
+                  .pos      0
+INIT      :irmovl Data,     %edx
+           irmovl 256,      %eax
+           addl   %edx,     %eax
+           rrmovl %eax,     %esp
+           rrmovl %eax,     %ebp
+ET1	:irmovl	11,	%eax
+	 rmmovl	%eax,	4(%edx)
+ET0	:mrmovl	4(%edx),	%eax
+	 rmmovl	%eax,	8(%edx)
+ET4	:irmovl	7,	%eax
+	 rmmovl	%eax,	12(%edx)
+ET3	:mrmovl	12(%edx),	%eax
+	 rmmovl	%eax,	16(%edx)
+ET7	:nop	,	
+ET8	:nop	,	
+ET6	:mrmovl	16(%edx),	%ebx
+	 mrmovl	8(%edx),	%eax
+	 subl	%eax,	%ebx
+	 rmmovl	%ebx,	20(%edx)
+ET53	:mrmovl	20(%edx),	%eax
+	 andl	%eax,	%eax
+	 je	ET54,	
+ET12	:nop	,	
+ET13	:nop	,	
+ET11	:mrmovl	16(%edx),	%ebx
+	 mrmovl	8(%edx),	%eax
+	 subl	%eax,	%ebx
+	 rmmovl	%ebx,	24(%edx)
+ET10	:mrmovl	24(%edx),	%eax
+	 rmmovl	%eax,	28(%edx)
+ET17	:nop	,	
+ET18	:nop	,	
+ET16	:mrmovl	8(%edx),	%ebx
+	 mrmovl	16(%edx),	%eax
+	 subl	%eax,	%ebx
+	 rmmovl	%ebx,	32(%edx)
+ET15	:mrmovl	32(%edx),	%eax
+	 rmmovl	%eax,	36(%edx)
+ET21	:nop	,	
+ET22	:nop	,	
+ET20	:mrmovl	28(%edx),	%eax
+	 mrmovl	36(%edx),	%ebx
+	 pushl	%eax,	
+	 pushl	%ebx,	
+	 call	MUL,	
+	 popl	%eax,	
+	 popl	%ebx,	
+	 mrmovl	0(%edx),	%eax
+	 rmmovl	%eax,	40(%edx)
+ET37	:mrmovl	40(%edx),	%eax
+	 andl	%eax,	%eax
+	 je	ET38,	
+ET26	:nop	,	
+ET27	:irmovl	1,	%eax
+	 rmmovl	%eax,	44(%edx)
+ET25	:mrmovl	28(%edx),	%eax
+	 mrmovl	44(%edx),	%ebx
+	 addl	%eax,	%ebx
+	 rmmovl	%ebx,	48(%edx)
+ET24	:mrmovl	48(%edx),	%eax
+	 rmmovl	%eax,	28(%edx)
+ET32	:nop	,	
+ET33	:irmovl	1,	%eax
+	 rmmovl	%eax,	52(%edx)
+ET31	:mrmovl	36(%edx),	%eax
+	 mrmovl	52(%edx),	%ebx
+	 addl	%eax,	%ebx
+	 rmmovl	%ebx,	56(%edx)
+ET30	:mrmovl	56(%edx),	%eax
+	 rmmovl	%eax,	36(%edx)
+ET36	:jmp	ET21,	
+ET38	:nop	,	
+ET39	:nop	,	
+ET51	:mrmovl	28(%edx),	%eax
+	 andl	%eax,	%eax
+	 je	ET47,	
+ET42	:nop	,	
+ET43	:nop	,	
+ET41	:mrmovl	16(%edx),	%ebx
+	 mrmovl	8(%edx),	%eax
+	 subl	%eax,	%ebx
+	 rmmovl	%ebx,	60(%edx)
+ET40	:mrmovl	60(%edx),	%eax
+	 rmmovl	%eax,	8(%edx)
+ET52	:jmp	ET50,	
+ET47	:nop	,	
+ET48	:nop	,	
+ET46	:mrmovl	8(%edx),	%ebx
+	 mrmovl	16(%edx),	%eax
+	 subl	%eax,	%ebx
+	 rmmovl	%ebx,	64(%edx)
+ET45	:mrmovl	64(%edx),	%eax
+	 rmmovl	%eax,	16(%edx)
+ET50	:jmp	ET7,	
+ET54	:nop	,	
+ET55	:halt	,	
+MUL       :nop
+           mrmovl 4(%esp),  %eax
+           mrmovl 8(%esp),  %ebx
+           andl   %eax,     %eax
+           je     END
+SIGN      :nop
+           jg     MULPLUS
+           irmovl 0,        %ecx
+           subl   %eax,     %ecx
+           rrmovl %ecx,     %eax
+           rmmovl %eax,     4(%esp)
+           irmovl 0,        %ecx
+           subl   %ebx,     %ecx
+           rrmovl %ecx,     %ebx
+           rmmovl %ebx,     8(%esp)
+MULPLUS   :nop
+           mrmovl 4(%esp),  %eax
+           andl   %eax,     %eax
+           je     END
+           irmovl 1,        %esi
+           subl   %esi,     %eax
+           mrmovl 8(%esp),  %ebx
+           pushl  %ebx
+           pushl  %eax
+           call   MULPLUS
+           popl   %eax
+           popl   %eax
+           mrmovl 0(%edx),  %eax
+           mrmovl 8(%esp),  %ebx
+           addl   %ebx,     %eax
+           rmmovl %eax,     0(%edx)
+           ret
+END       :irmovl 0,        %eax
+           rmmovl %eax,     0(%edx)
+           ret
+                  .align    8
+Data      :
