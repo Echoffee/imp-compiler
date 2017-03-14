@@ -247,11 +247,17 @@ void c3a_execute()
 			break;
 			
 			case JP:
-			
+				output_write(c_root->etq, "jmp", c_root->dst, "");
 			break;
 			
 			case JZ:
-			
+			{
+				char v1[16];
+				sprintf(v1, "%d(%%edx)", get_var_pos(c_root->arg1));
+				output_write(c_root->etq, "mrmovl", v1, "%eax");
+				output_write("", "andl", "%eax", "%eax");
+				output_write("", "je", c_root->dst, "");
+			}
 			break;
 			
 			case ST:

@@ -49,8 +49,8 @@ CMD		: S_PL S_SE V S_SE V S_SE V_VAR { $$ = c3a_arg_set("PL", $3, $5, $7); }
 		| S_AFC S_SE V S_SE S_SE V_VAR { $$ = c3a_arg_set("AFC", $3, "", $6); }
 		| S_SK S_SE S_SE S_SE { $$ = c3a_arg_set("SK", "", "", ""); }
 		| S_SK S_SE S_SE S_SE V_VAR{ $$ = c3a_arg_set("SK", "", "", ""); }
-		| S_JP S_SE S_SE S_SE V_VAR { $$ = c3a_arg_set("JP", $5, "", ""); }
-		| S_JZ S_SE V S_SE S_SE V_VAR { $$ = c3a_arg_set("JZ", $3, $6, ""); }
+		| S_JP S_SE S_SE S_SE V_VAR { $$ = c3a_arg_set("JP", "", "", $5); }
+		| S_JZ S_SE V S_SE S_SE V_VAR { $$ = c3a_arg_set("JZ", $3,"", $6); }
 		| S_ST S_SE S_SE S_SE { $$ = c3a_arg_set("ST", "", "", ""); }
 		;
 
