@@ -4,6 +4,8 @@
 *.imp
 *.c3a
 *.output
+*.yo
+*.ys
 iimp
 cimp
 ic3a
