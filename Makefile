@@ -46,6 +46,10 @@ iimp: iimp.lex.yy.c iimp.tab.c iimp.tab.h iimp.c
 		gcc -o iimp iimp.tab.c iimp.lex.yy.c iimp.c -lfl
 		
 iimp.c : ;
+cmp_c3a.c : ;
+cmp_imp.c : ;
+int_c3a.c : ;
+int_imp.c : ;
 
 clean:
 	rm int_imp int_c3a cmp_imp cmp_c3a iimp *.tab.c *.lex.yy.c *.tab.h *.output 
