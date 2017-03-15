@@ -1,5 +1,5 @@
 %{
-    #include "ic3a.tab.h"
+    #include "int_c3a.tab.h"
     #define YY_DECL int yylex()
 
 %}

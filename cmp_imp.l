@@ -1,5 +1,5 @@
 %{
-    #include "cimp.tab.h"
+    #include "cmp_imp.tab.h"
     #define YY_DECL int yylex()
 
 %}

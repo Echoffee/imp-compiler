@@ -1,40 +1,40 @@
-all: iimp ic3a cimp cc3a
+all: int_imp int_c3a cmp_imp cmp_c3a
 
-iimp.tab.c iimp.tab.h:	iimp.y
-	bison -d iimp.y
+int_imp.tab.c int_imp.tab.h:	int_imp.y
+	bison -d int_imp.y
 
-iimp.lex.yy.c: iimp.l iimp.tab.h
-	flex -o iimp.lex.yy.c iimp.l
+int_imp.lex.yy.c: int_imp.l int_imp.tab.h
+	flex -o int_imp.lex.yy.c int_imp.l
 
-iimp: iimp.lex.yy.c iimp.tab.c iimp.tab.h imp_interpreter.c
-	gcc -o iimp iimp.tab.c iimp.lex.yy.c imp_interpreter.c -lfl
+int_imp: int_imp.lex.yy.c int_imp.tab.c int_imp.tab.h imp_interpreter.c
+	gcc -o int_imp int_imp.tab.c int_imp.lex.yy.c imp_interpreter.c -lfl
 
-ic3a.tab.c ic3a.tab.h:	ic3a.y
-	bison -d ic3a.y
+int_c3a.tab.c int_c3a.tab.h:	int_c3a.y
+	bison -d int_c3a.y
 
-ic3a.lex.yy.c: ic3a.l ic3a.tab.h
-	flex -o ic3a.lex.yy.c ic3a.l
+int_c3a.lex.yy.c: int_c3a.l int_c3a.tab.h
+	flex -o int_c3a.lex.yy.c int_c3a.l
 
-ic3a : ic3a.lex.yy.c ic3a.tab.c ic3a.tab.h c3a_interpreter.c
-	gcc -o ic3a ic3a.tab.c ic3a.lex.yy.c c3a_interpreter.c -lfl
+int_c3a : int_c3a.lex.yy.c int_c3a.tab.c int_c3a.tab.h c3a_interpreter.c
+	gcc -o int_c3a int_c3a.tab.c int_c3a.lex.yy.c c3a_interpreter.c -lfl
 
-cimp.lex.yy.c: cimp.l cimp.tab.h
-		flex -o cimp.lex.yy.c cimp.l
+cmp_imp.lex.yy.c: cmp_imp.l cmp_imp.tab.h
+		flex -o cmp_imp.lex.yy.c cmp_imp.l
 
-cimp.tab.c cimp.tab.h:	cimp.y
-		bison -d cimp.y
+cmp_imp.tab.c cmp_imp.tab.h:	cmp_imp.y
+		bison -d cmp_imp.y
 
-cimp: cimp.lex.yy.c cimp.tab.c cimp.tab.h imp_compiler.c
-		gcc -o cimp cimp.tab.c cimp.lex.yy.c imp_compiler.c -lfl
+cmp_imp: cmp_imp.lex.yy.c cmp_imp.tab.c cmp_imp.tab.h imp_compiler.c
+		gcc -o cmp_imp cmp_imp.tab.c cmp_imp.lex.yy.c imp_compiler.c -lfl
 
-cc3a.lex.yy.c: cc3a.l cc3a.tab.h
-		flex -o cc3a.lex.yy.c cc3a.l
+cmp_c3a.lex.yy.c: cmp_c3a.l cmp_c3a.tab.h
+		flex -o cmp_c3a.lex.yy.c cmp_c3a.l
 		
-cc3a.tab.c cc3a.tab.h:	cc3a.y
-		bison -d cc3a.y
+cmp_c3a.tab.c cmp_c3a.tab.h:	cmp_c3a.y
+		bison -d cmp_c3a.y
 		
-cc3a: cc3a.lex.yy.c cc3a.tab.c cc3a.tab.h c3a_compiler.c
-		gcc -o cc3a cc3a.tab.c cc3a.lex.yy.c c3a_compiler.c -lfl
+cmp_c3a: cmp_c3a.lex.yy.c cmp_c3a.tab.c cmp_c3a.tab.h c3a_compiler.c
+		gcc -o cmp_c3a cmp_c3a.tab.c cmp_c3a.lex.yy.c c3a_compiler.c -lfl
 		
 clean:
-	rm iimp ic3a cimp cc3a *.tab.c *.lex.yy.c *.tab.h *.output 
+	rm int_imp int_c3a cmp_imp cmp_c3a *.tab.c *.lex.yy.c *.tab.h *.output 

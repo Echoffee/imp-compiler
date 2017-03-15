@@ -1,5 +1,5 @@
 %{
-    #include "iimp.tab.h"
+    #include "int_imp.tab.h"
     #define YY_DECL int yylex()
 
 %}
