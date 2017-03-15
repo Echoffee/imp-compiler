@@ -6,7 +6,8 @@
 *.output
 *.yo
 *.ys
+int_imp
+int_c3a
+cmp_imp
+cmp_c3a
 iimp
-cimp
-ic3a
-cc3a
