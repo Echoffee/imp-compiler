@@ -2,7 +2,7 @@
 
 %{
     #include <stdio.h>
-	#include "imp_compiler.h"
+	#include "iimp.h"
     int yylex();
     int yyerror(char* s);
 %}
@@ -32,7 +32,8 @@
 
 %start STRT
 %%
-STRT	: C {/*display_ast_tree($1, 0);*/ast_execute($1); fprintf(stdout,"END	:St	:	:	:"); fprintf(stderr, "\n*** Done ***\n");}
+STRT	: C {/*display_ast_tree($1, 0);*/ast_execute($1); fprintf(stderr, "\n*** IMP > C3A Done ***\n");}
+		;
 
 E		: E S_PL T {$$ = ast_create_o_node($1, $3, ADD);}
 		| E S_MO T {$$ = ast_create_o_node($1, $3, SUB);}
@@ -82,5 +83,10 @@ int main()
 {
 	initialize_ast();
     yyparse();
+	c3a_add_etq_cmd("END", c3a_arg_set("ST", "", "", ""));
+	init_output();
+	c3a_execute();
+	end_output();
+	fprintf(stderr, "\n*** C3A > Y86 Done ***\n");
     return 0;
 }

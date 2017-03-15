@@ -19,16 +19,7 @@ struct s_var{
 typedef struct s_etq_cmd* etq_cmd;
 typedef struct s_c3a_cmd* c3a_cmd;
 typedef struct s_var* var;
-/*
-	ast_node childs :
-		- ROOT : n, basically the main()
-		- MEMBER : none, is a variable or a constant
-		- OPERATOR : 0 : left member; 1 : right member
-		- LOOP :
-			- ITE : 0 : condition; 1 : then block; 2 : else block
-			- WD : 0 : condition; 1 : do block
-		- BRANCH : like ROOT but yeah no
-*/
+
 void init_output();
 void end_output();
 void c3a_execute();

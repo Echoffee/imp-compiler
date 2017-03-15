@@ -31,7 +31,7 @@
 
 %start STRT
 %%
-STRT	: C {display_ast_tree($1, 0); ast_execute($1); printf("\n*** Done ***\n");}
+STRT	: C {/*display_ast_tree($1, 0);*/ ast_execute($1); printf("\n*** Done ***\n");}
 
 E		: E S_PL T {$$ = ast_create_o_node($1, $3, ADD);}
 		| E S_MO T {$$ = ast_create_o_node($1, $3, SUB);}

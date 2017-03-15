@@ -29,7 +29,7 @@
 
 %start STRT
 %%
-STRT	: C {display_ast_tree($1, 0); ast_execute($1); fprintf(stderr, "\n*** Done ***\n");}
+STRT	: C {/*display_ast_tree($1, 0);*/ ast_execute($1); fprintf(stderr, "\n*** Done ***\n");}
 
 C		: C S_EOL C {$$ = ast_create_branch($1, $3);}
 		| L { $$ = $1; }
