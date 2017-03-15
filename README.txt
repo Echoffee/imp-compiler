@@ -50,3 +50,9 @@ Question 5 / Synthèse : Compilateur IMP > Y86 (iimp)
 Une sorte d'arbre AST peut être affiché en décommentant les appels à display_ast_tree(), mais 
 l'affichage n'est pas très agréable.
 
+Lors de la préparation de mon rendu, la commande make invoquait de temps en temps des commandes
+non spécifiées dans les règles données (yacc et mv -f). Ces commandes écrasaient le fichier iimp.c avec du code
+généré par Bison, rendant donc la compilation impossible. 
+J'ai pu retrouver un comportement normal qu'en ayant utilisé un backup grâce à Git.
+Si un comportement semblable vous arrive, veuillez me contacter par mail pour que je vous donne
+un lien vers mon dépôt afin d'avoir un Makefile sain.
